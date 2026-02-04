@@ -1,0 +1,20 @@
+login
+a: true
+b: true
+c: true
+d: true
+
+verify login
+a: true
+
+navigate to plan page
+a: true
+b: true
+c: true
+
+purchase regular plan
+a: true
+
+apply coupon
+a: true
+b: true

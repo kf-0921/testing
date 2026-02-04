@@ -1,0 +1,46 @@
+login
+login button: true
+username input: true
+password input: true
+login submit button: true
+check login element: true
+5/5 selector true
+
+login header
+home link: true
+history link: true
+digital assets link: true
+language switcher: true
+language dropdown: true
+traditional chinese language link: true
+english language link: true
+user dropdown: true
+user name: true
+user name from avatar: true
+dropdown menu: true
+user name in dropdown: true
+quota item: true
+server link: true
+blog link: true
+plan link: true
+enterprise link: true
+news link: true
+faq link: true
+account link: true
+payment link: true
+logout button: true
+22/22 selector true
+
+footer
+footer home link: true
+company link: true
+address link: true
+email link: true
+about us link: true
+contact us link: true
+privacy policy link: true
+terms and conditions link: true
+8/8 selector true
+
+page order confirm
+53857 is success

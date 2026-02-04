@@ -1,0 +1,31 @@
+login
+login button: true
+username input: true
+password input: true
+login submit button: true
+check login element: true
+
+login header
+home link: true (URL: https://poffices.ai/)
+history link: true (URL: https://poffices.ai/history-page/)
+digital assets link: true (URL: https://poffices.ai/my-digital-assets)
+language switcher: true
+language dropdown: true
+traditional chinese language link: true (URL: https://poffices.ai/zh-hant/)
+english language link: true (URL: #)
+user dropdown: true
+user name: true
+user name1: RPA-Tester_1
+dropdown menu: true
+user name in dropdown: true
+user name in dropdown text: RPA-Tester_1
+quota item: true (URL: https://poffices.ai/subscription-plans)
+credit: Credit
+252,000 (URL: https://poffices.ai/subscription-plans)
+server link: true (URL: https://poffices.ai/all-in-one-server-product-page)
+blog link: true (URL: https://poffices.ai/blog-list-style-2)
+plan link: true (URL: https://poffices.ai/subscription-plans)
+enterprise link: true (URL: https://poffices.ai/enterprise)
+account link: true (URL: https://poffices.ai/my-account/)
+payment link: true (URL: https://poffices.ai/my-account/orders/)
+logout button: true (URL: #)

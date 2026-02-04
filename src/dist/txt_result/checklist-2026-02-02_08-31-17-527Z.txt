@@ -1,0 +1,86 @@
+login
+login button: true (Text: Login) (URL: #)
+username input: true
+password input: true
+login submit button: true (Text: Login)
+check login element: true (Text: Dashboard
+Orders
+My Subscription
+Address
+Account details)
+
+login header
+home link: true (URL: https://poffices.ai/)
+history link: true (URL: https://poffices.ai/history-page/)
+digital assets link: true (URL: https://poffices.ai/my-digital-assets)
+language switcher: true (Text: Language)
+language dropdown: true (Text: ENG繁中)
+traditional chinese language link: true (Text: 繁中) (URL: https://poffices.ai/zh-hant/)
+english language link: true (Text: ENG) (URL: #)
+user dropdown: true (Text: RPA-Tester_1)
+user name: true (Text: RPA-Tester_1)
+dropdown menu: true (Text: RPA-Tester_1
+                    
+
+                    
+                        
+                            Credit
+                            300,000
+                        
+                    
+
+                    
+                        
+                        All-in-One Server
+                    
+
+                    
+                        
+                        Blog
+                    
+                    
+                        
+                        Plan
+                    
+
+                    
+                        
+                        
+                            Enterprise
+                            Available on Enterprise Plan
+                        
+                    
+
+                    
+                        
+                        News
+                    
+                    
+                        
+                        FAQ
+                    
+                    
+                        
+                        Account
+                    
+                    
+                        
+                        Payment
+                    
+                    
+                    
+                        
+                        Logout)
+user name in dropdown: true (Text: RPA-Tester_1)
+quota item: true (Text: Credit
+                            300,000) (URL: https://poffices.ai/subscription-plans)
+server link: true (Text: All-in-One Server) (URL: https://poffices.ai/all-in-one-server-product-page)
+blog link: true (Text: Blog) (URL: https://poffices.ai/blog-list-style-2)
+plan link: true (Text: Plan) (URL: https://poffices.ai/subscription-plans)
+enterprise link: true (Text: Enterprise
+                            Available on Enterprise Plan) (URL: https://poffices.ai/enterprise)
+news link: true (Text: News) (URL: https://poffices.ai/news-page)
+faq link: true (Text: FAQ) (URL: https://poffices.ai/faq)
+account link: true (Text: Account) (URL: https://poffices.ai/my-account/)
+payment link: true (Text: Payment) (URL: https://poffices.ai/my-account/orders/)
+logout button: true (Text: Logout) (URL: #)

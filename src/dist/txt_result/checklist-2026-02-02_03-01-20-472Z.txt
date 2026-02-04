@@ -1,0 +1,17 @@
+login
+login button: true
+username input: true
+password input: true
+login submit button: true
+navigation element: true
+
+regular check out
+popup close button: true
+user dropdown: true
+plan link: true
+buy now button: true
+coupon input: true
+apply coupon button: true
+checkout button: true
+place order button: true
+order number element: true

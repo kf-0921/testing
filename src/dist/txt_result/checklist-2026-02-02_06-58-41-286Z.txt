@@ -1,0 +1,22 @@
+login
+login button: true
+username input: true
+password input: true
+login submit button: true
+check login element: true
+
+login header
+home link: true
+history link: true
+digital assets link: true
+language switcher: false
+language dropdown: true
+traditional chinese language link: true
+english language link: true
+user dropdown: true
+user name: true
+user name1: RPA-Tester_1
+dropdown menu: true
+user name in dropdown: true
+user name in dropdown text: 
+quota item: false

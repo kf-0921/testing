@@ -1,0 +1,28 @@
+{
+    "name": "puppeteer-demo",
+    "version": "1.0.0",
+    "description": "Puppeteer Google Search Demo",
+    "main": "index.ts",
+    "scripts": {
+        "start": "ts-node index.ts",
+        "build": "tsc"
+    },
+    "keywords": [
+        "puppeteer",
+        "typescript",
+        "automation"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "puppeteer": "^22.15.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.19.30",
+        "@types/puppeteer": "^7.0.4",
+        "puppeteer-screen-recorder": "^2.1.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3",
+        "exceljs": "^4.4.0"
+    }
+}

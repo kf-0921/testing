@@ -1,0 +1,58 @@
+login
+login button: true
+username input: true
+password input: true
+login submit button: true
+check login element: true
+
+regular check out
+popup close button: true
+user dropdown: true
+plan link: true
+regular buy now button: true
+coupon input: true
+apply coupon button: true
+checkout button: true
+place order button: true
+order number element: true
+user dropdown in order number page: true
+account link: true
+account orders link: true
+order number: true
+view order button exists: true
+
+login header
+home link: true (URL: https://poffices.ai/)
+history link: true (URL: https://poffices.ai/history-page/)
+digital assets link: true (URL: https://poffices.ai/my-digital-assets)
+language switcher: true (Text: Language)
+language dropdown: true (Text: ENG繁中)
+traditional chinese language link: true (Text: 繁中) (URL: https://poffices.ai/zh-hant/)
+english language link: true (Text: (+852) 2144 2628) (URL: #)
+user dropdown: true (Text: RPA-Tester_1)
+user name: true (Text: RPA-Tester_1)
+user name from avatar: true (Text: RPA-Tester_1)
+dropdown menu: true (Text: RPA-Tester_1
+Credit
+276,000
+All-in-One Server
+Blog
+Plan
+Enterprise
+Available on Enterprise Plan
+News
+FAQ
+Account
+Payment
+Logout)
+user name in dropdown: true (Text: RPA-Tester_1)
+quota item: true (Text: Credit
+276,000) (URL: https://poffices.ai/subscription-plans)
+server link: true (Text: All-in-One Server) (URL: https://poffices.ai/all-in-one-server-product-page)
+blog link: true (Text: Blog) (URL: https://poffices.ai/blog-list-style-2)
+plan link: true (Text: Plan) (URL: https://poffices.ai/subscription-plans)
+enterprise link: true (Text: Enterprise
+Available on Enterprise Plan) (URL: https://poffices.ai/enterprise)
+account link: true (Text: Account) (URL: https://poffices.ai/my-account/)
+payment link: true (Text: Payment) (URL: https://poffices.ai/my-account/orders/)
+logout button: true (Text: Logout) (URL: #)
