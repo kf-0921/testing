@@ -8,7 +8,7 @@ interface ElementConfig {
     name: string;
 }
 
-const headerElements: ElementConfig[] = [
+const homePageElements: ElementConfig[] = [
     { selector: 'rs-layer#slider-9-slide-26-layer-8 img', name: 'welcome image' },
     { selector: 'rs-layer#slider-9-slide-26-layer-13', name: 'title' },
     { selector: 'textarea#background-info', name: 'text area' },
@@ -24,7 +24,7 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
     const url = await getUrlIfLink(page, config.selector, found);
     const text = await getTextIfExists(page, config.selector, found);
 
-    checklistManager.addItemToSection('home page', 'home page', {
+    checklistManager.addItemToSection('Home Page', 'Home Page', {
         name: config.name,
         found,
         text,
@@ -33,13 +33,13 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
 }
 
 async function checkHomePage(page: any, checklistManager: ChecklistManager) {
-    for (const element of headerElements) {
+    for (const element of homePageElements) {
         await checkElement(page, checklistManager, element);
     }
 }
 
 export async function homePageCheck(page: any, checklistManager: ChecklistManager) {
     await checkHomePage(page, checklistManager);
-    await loginHeaderCheck(page, checklistManager, 'home page');
-    await footerCheck(page, checklistManager, 'home page');
+    await loginHeaderCheck(page, checklistManager, 'Home Page');
+    await footerCheck(page, checklistManager, 'Home Page');
 }

@@ -1,7 +1,5 @@
 import { ChecklistManager } from "../../../utils/checklist";
 import { getTextIfExists } from "../../../utils/selectorContent";
-import { loginHeaderCheck } from "../../defaultLayout/login_header";
-import { footerCheck } from "../../defaultLayout/footer";
 import { openHistoryFilterPopup } from "../../../actions/direct_history_page/open_history_filter";
 
 
@@ -10,13 +8,13 @@ interface ElementConfig {
     name: string;
 }
 
-// 靜態元素配置
+
 const staticElements: ElementConfig[] = [
-    // Filter 標題 + Reset
+    // Filter title + Reset button
     { selector: 'div.css-1xdhyk6 h2.css-2sdbyo', name: 'filter title' },
     { selector: 'div.css-1xdhyk6 button.css-j0qll3', name: 'reset button' },
 
-    // Office Name
+    // Office name
     { selector: 'div.css-1xdhyk6 p.css-1y04kt4:nth-of-type(1)', name: 'office name' },
     // Agent Name
     { selector: 'div.css-1xdhyk6 p.css-1y04kt4:nth-of-type(2)', name: 'agent name' },
@@ -29,7 +27,7 @@ const staticElements: ElementConfig[] = [
     { selector: '#filter-period-end', name: 'period to input' }
 ];
 
-// 特定的 Office 選項配置（使用 checkbox value）
+// Specific Office options configuration (using checkbox value)
 const officeOptionsByValue: { value: string; name: string }[] = [
     { value: '1', name: 'General Office filter' },
     { value: '2', name: 'Business Office filter' },
@@ -210,7 +208,7 @@ async function checkOfficeOptionByValue(page: any, checklistManager: ChecklistMa
         }
     }
 
-    checklistManager.addItemToSection('history page', 'history filter', {
+    checklistManager.addItemToSection('History Page', 'History Filter', {
         name: displayName,
         found,
         text: text ? `${text} (value: ${value})` : displayName,
@@ -239,7 +237,7 @@ async function checkAgentTypeOptionByValue(page: any, checklistManager: Checklis
         }
     }
 
-    checklistManager.addItemToSection('history page', 'history filter', {
+    checklistManager.addItemToSection('History Page', 'History Filter', {
         name: displayName,
         found,
         text: text ? `${text} (value: ${value})` : displayName,
@@ -251,7 +249,7 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
     const found = await checklistManager.checkElement(page, config.selector);
     const text = await getTextIfExists(page, config.selector, found);
 
-    checklistManager.addItemToSection('history page', 'history filter', {
+    checklistManager.addItemToSection('History Page', 'History Filter', {
         name: config.name,
         found,
         text,
@@ -260,23 +258,18 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
 }
 
 async function checkHistoryFilter(page: any, checklistManager: ChecklistManager) {
-    // 檢查靜態元素
     for (const element of staticElements) {
         await checkElement(page, checklistManager, element);
     }
-
-    // 檢查特定的 Office 選項
     for (const office of officeOptionsByValue) {
         await checkOfficeOptionByValue(page, checklistManager, office.value, office.name);
     }
-    // 檢查特定的 Agent Type 選項
     for (const agentType of agentTypeOptionsByValue) {
         await checkAgentTypeOptionByValue(page, checklistManager, agentType.value, agentType.name);
     }
 }
 
 export async function historyFilterCheck(page: any, checklistManager: ChecklistManager) {
-    await openHistoryFilterPopup(page);
+    await openHistoryFilterPopup(page, checklistManager);
     await checkHistoryFilter(page, checklistManager);
-    
 }

@@ -1,5 +1,5 @@
-import { ChecklistManager } from "../utils/checklist";
-import directToHomePage from "./home_page";
+import { ChecklistManager } from "../../utils/checklist";
+import directToHomePage from "../home_page";
 
 // Helper function to navigate to history page
 export async function navigateToHistoryPage(page: any, checklistManager: ChecklistManager) {
@@ -23,14 +23,14 @@ async function checkHistoryPage(page: any, checklistManager: ChecklistManager) {
     const historyPageCheck = await page.$(selector);
     if (historyPageCheck) {
         // Log selector found first
-        checklistManager.logDirectMessage('history page', `Selector found: ${selector}`);
+        checklistManager.logDirectMessage('History Page', `Selector found: ${selector}`);
         // Then log successful navigation
-        checklistManager.logDirectMessage('history page', 'Successfully navigated to history page');
+        checklistManager.logDirectMessage('History Page', 'Successfully navigated to History Page');
     } else {
         // Log selector not found first
-        checklistManager.logDirectMessage('history page', `Selector not found: ${selector}`);
+        checklistManager.logDirectMessage('History Page', `Selector not found: ${selector}`);
         // Then log failed navigation
-        checklistManager.logDirectMessage('history page', 'Failed to navigate to history page');
+        checklistManager.logDirectMessage('History Page', 'Failed to navigate to History Page');
     }
 }
 

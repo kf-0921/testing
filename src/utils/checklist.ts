@@ -261,13 +261,27 @@ class ChecklistManager {
       if (!this.fileSections.has(worksheetName)) {
         let worksheet = this.workbook.getWorksheet(worksheetName);
         if (!worksheet) {
-          worksheet = this.workbook.addWorksheet(worksheetName);
+          try {
+            worksheet = this.workbook.addWorksheet(worksheetName);
+          } catch (e: any) {
+            if (e.message && e.message.includes('Worksheet name already exists')) {
+              // 名稱已存在時再取一次；若仍然拿不到就放棄寫入，避免崩潰
+              worksheet = this.workbook.getWorksheet(worksheetName) || undefined;
+            } else {
+              throw e;
+            }
+          }
+        }
+
+        // 如果還是拿不到 worksheet，就跳過這個 worksheet，避免 addRow 出錯
+        if (!worksheet) {
+          console.warn(`Worksheet '${worksheetName}' not found, skip writing direct messages.`);
+          continue;
         }
 
         messages.forEach((msg) => {
           worksheet.addRow([msg]);
         });
-        // Add blank line in Excel after direct messages (move this line up)
         worksheet.addRow(['', '', '', '']);
 
         this.txtContent.push(worksheetName);

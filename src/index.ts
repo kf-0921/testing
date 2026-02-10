@@ -72,7 +72,7 @@ async function testPoffices() {
 
       
     
-      await testDirectPage(page, checklistManager);
+      // await testDirectPage(page, checklistManager);
       await checkAllElements(page, checklistManager);
 
 

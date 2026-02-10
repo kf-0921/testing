@@ -25,14 +25,14 @@ async function checkHomePage(page: any, checklistManager: ChecklistManager) {
 
     if (homePageCheck) {
         // Log selector found first
-        checklistManager.logDirectMessage('home page', `Selector found: ${selector}`);
+        checklistManager.logDirectMessage('Home Page', `Selector found: ${selector}`);
         // Then log successful navigation
-        checklistManager.logDirectMessage('home page', 'Successfully navigated to home page');
+        checklistManager.logDirectMessage('Home Page', 'Successfully navigated to Home Page');
     } else {
         // Log selector not found first
-        checklistManager.logDirectMessage('home page', `Selector not found: ${selector}`);
+        checklistManager.logDirectMessage('Home Page', `Selector not found: ${selector}`);
         // Then log failed navigation
-        checklistManager.logDirectMessage('home page', 'Failed to navigate to home page');
+        checklistManager.logDirectMessage('Home Page', 'Failed to navigate to Home Page');
     }
 }
 

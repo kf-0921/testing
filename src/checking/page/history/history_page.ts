@@ -8,7 +8,7 @@ interface ElementConfig {
     name: string;
 }
 
-const headerElements: ElementConfig[] = [
+const contentElements: ElementConfig[] = [
     { selector: 'h1.css-j95cc2', name: 'title' },
     { selector: 'div.css-lluksu h2.css-2sdbyo', name: 'promote message' },
     { selector: 'div.css-1lsiufc', name: 'remind message' },
@@ -25,7 +25,7 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
     const url = await getUrlIfLink(page, config.selector, found);
     const text = await getTextIfExists(page, config.selector, found);
 
-    checklistManager.addItemToSection('history page', 'history page', {
+    checklistManager.addItemToSection('History Page', 'History Page', {
         name: config.name,
         found,
         text,
@@ -34,13 +34,13 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
 }
 
 async function checkHistoryPage(page: any, checklistManager: ChecklistManager) {
-    for (const element of headerElements) {
+    for (const element of contentElements) {
         await checkElement(page, checklistManager, element);
     }
 }
 
 export async function historyPageCheck(page: any, checklistManager: ChecklistManager) {
     await checkHistoryPage(page, checklistManager);
-    await loginHeaderCheck(page, checklistManager, 'history page');
-    await footerCheck(page, checklistManager, 'history page');
+    await loginHeaderCheck(page, checklistManager, 'History Page');
+    await footerCheck(page, checklistManager, 'History Page');
 }

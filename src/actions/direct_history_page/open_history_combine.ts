@@ -1,7 +1,8 @@
-import { navigateToHistoryPage } from "../history_page";
+import { navigateToHistoryPage } from "./history_page";
+import { ChecklistManager } from "../../utils/checklist";
 
-export async function openHistoryCombinePopup(page: any): Promise<boolean> {
-    await navigateToHistoryPage(page);
+export async function openHistoryCombinePopup(page: any, checklistManager: ChecklistManager): Promise<boolean> {
+    await navigateToHistoryPage(page, checklistManager);
     await page.waitForSelector('span.css-1qotdj5 input.css-j8yymo', { timeout: 3000 }).catch(() => null);
 
     const checkboxes = await page.$$('span.css-1qotdj5 input.css-j8yymo');
