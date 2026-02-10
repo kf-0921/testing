@@ -1,15 +1,18 @@
 import * as path from 'path';
 import { setupDirectories, setupBrowserAndRecorder, cleanup, createChecklistManager } from './utils/setup';
 import { loginStep } from './actions/login';
-import { regularPlanStep } from './actions/regular_check_out';
 import { takeScreenshot } from './utils/screenshot';
-import { loginHeaderCheck } from './checking/login_header';
+import { loginHeaderCheck } from './checking/defaultLayout/login_header';
 import directToHomePage from './actions/home_page';
-import { footerCheck } from './checking/footer';
+import { footerCheck } from './checking/defaultLayout/footer';
 import { directAccountAccountDetails } from './actions/direct_dropdown/account/direct_account_dashboard';
 import { planRegularCheckOut } from './actions/test/checkout/plan_regular_check_out';
 import { confirmOrderStep } from './actions/test/checkout/confirm_order';
 import { serverRegularCheck } from './actions/test/checkout/server_b1_check_out';
+import { checkCredit, creditCount } from './actions/test/credit/check_credit';
+import { genDoc } from './actions/test/gen_document/gen_doc';
+import { testDirectPage } from './actions/test/direct_page/test_direct_page';
+import { checkAllElements } from './checking/allCheck';
 
 
 // main function
@@ -37,12 +40,10 @@ async function testPoffices() {
       await loginStep(page, checklistManager);
     };
     // regular plan step
-    const RegularPlanStep = async () => {
-      await regularPlanStep(page, checklistManager);
-    };
+  
     // direct to home page
     const DirectToHomePage = async () => {
-      await directToHomePage(page);
+      await directToHomePage(page, checklistManager);
     };
 
     // checking step
@@ -65,24 +66,23 @@ async function testPoffices() {
       //login step
       await DirectToHomePage();
       await LoginStep();
+      // check credit
+      // const startCredit = await checkCredit(page, checklistManager);
+      
 
-      // //action step
-      // await DirectToHomePage();
-      // await RegularPlanStep();
-
-
-      // checking step
-      await DirectToHomePage();
-      await LoginHeaderCheck();
-      await FooterCheck();
-
-      //await DirectAccountAddressStep();
-
-      // await planRegularCheckOut(page, checklistManager);
-      // await serverRegularCheck(page, checklistManager);
+      
+    
+      await testDirectPage(page, checklistManager);
+      await checkAllElements(page, checklistManager);
 
 
 
+
+
+
+      // // credit count
+      //const endCredit = await checkCredit(page, checklistManager);
+      //await creditCount(startCredit, endCredit, checklistManager);
       // take screenshot
       await takeScreenshot(page, screenshotPath);
       // save checklist files

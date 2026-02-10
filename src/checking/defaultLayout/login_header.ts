@@ -1,5 +1,5 @@
-import { ChecklistManager } from '../utils/checklist';
-import { getUrlIfLink, getTextIfExists } from '../utils/selectorContent';
+import { ChecklistManager } from '../../utils/checklist';
+import { getUrlIfLink, getTextIfExists } from '../../utils/selectorContent';
 
 interface ElementConfig {
   selector: string;
@@ -12,14 +12,14 @@ const headerElements: ElementConfig[] = [
   { selector: 'a.digital-assets-link', name: 'digital assets link' },
   { selector: 'div.language-switcher', name: 'language switcher' },
   { selector: 'div.language-dropdown', name: 'language dropdown' },
-  { selector: 'div.language-options a[href="https://poffices.ai/zh-hant/"]', name: 'traditional chinese language link' },
+  { selector: 'div.language-options a[href*="https://poffices.ai/zh-hant/"]', name: 'traditional chinese language link' },
   { selector: 'div.language-options a[href="#"]', name: 'english language link' },
 ];
 
 const dropdownElements: ElementConfig[] = [
-  { selector: 'div.nav-user-dropdown', name: 'user dropdown' },
+  //{ selector: 'div.nav-user-dropdown', name: 'user dropdown' },
   { selector: 'span.nav-user-name-1', name: 'user name' },
-  { selector: 'div#navDropdownMenu', name: 'dropdown menu' },
+ // { selector: 'div#navDropdownMenu', name: 'dropdown menu' },
   { selector: 'span.nav-user-name', name: 'user name in dropdown' },
   { selector: 'a.nav-quota-item', name: 'quota item' },
   { selector: 'a#nav-dropdown-server', name: 'server link' },
@@ -33,12 +33,12 @@ const dropdownElements: ElementConfig[] = [
   { selector: 'a#navLogoutButton', name: 'logout button' },
 ];
 
-async function checkElement(page: any, checklistManager: ChecklistManager, config: ElementConfig) {
+async function checkElement(page: any, checklistManager: ChecklistManager, config: ElementConfig, fileName: string) {
   const found = await checklistManager.checkElement(page, config.selector);
   const url = await getUrlIfLink(page, config.selector, found);
   const text = await getTextIfExists(page, config.selector, found);
   
-  checklistManager.addItemToFile('login header', {
+  checklistManager.addItemToSection(fileName, 'header', {
     name: config.name,
     found,
     text,
@@ -46,16 +46,16 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
   });
 }
 
-async function checkHeader(page: any, checklistManager: ChecklistManager) {
+async function checkHeader(page: any, checklistManager: ChecklistManager, fileName: string) {
   for (const element of headerElements) {
-    await checkElement(page, checklistManager, element);
+    await checkElement(page, checklistManager, element, fileName);
   }
 }
 
-async function checkUserDropdown(page: any, checklistManager: ChecklistManager) {
+async function checkUserDropdown(page: any, checklistManager: ChecklistManager, fileName: string) {
   // Check user dropdown and user name before opening dropdown
-  await checkElement(page, checklistManager, dropdownElements[0]); // user dropdown
-  await checkElement(page, checklistManager, dropdownElements[1]); // user name
+  await checkElement(page, checklistManager, dropdownElements[0], fileName); // user dropdown
+  await checkElement(page, checklistManager, dropdownElements[1], fileName); // user name
 
   // Get username from avatar alt text
   let username = '';
@@ -79,7 +79,7 @@ async function checkUserDropdown(page: any, checklistManager: ChecklistManager) 
   // Check avatar with extracted username
   const avatarFound = await checklistManager.checkElement(page, 'div.nav-user-avatar-trigger img');
   const avatarUrl = await getUrlIfLink(page, 'div.nav-user-avatar-trigger img', avatarFound);
-  checklistManager.addItemToFile('login header', {
+  checklistManager.addItemToSection(fileName, 'header', {
     name: 'user name from avatar',
     found: avatarFound,
     text: username,
@@ -88,11 +88,11 @@ async function checkUserDropdown(page: any, checklistManager: ChecklistManager) 
 
   // Check remaining dropdown elements (skip first 2 as they're already checked)
   for (const element of dropdownElements.slice(2)) {
-    await checkElement(page, checklistManager, element);
+    await checkElement(page, checklistManager, element, fileName);
   }
 }
 
-export async function loginHeaderCheck(page: any, checklistManager: ChecklistManager) {
-  await checkHeader(page, checklistManager);
-  await checkUserDropdown(page, checklistManager);
+export async function loginHeaderCheck(page: any, checklistManager: ChecklistManager, fileName: string = 'login header') {
+  await checkHeader(page, checklistManager, fileName);
+  await checkUserDropdown(page, checklistManager, fileName);
 }

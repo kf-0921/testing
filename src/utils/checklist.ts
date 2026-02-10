@@ -4,9 +4,14 @@ import ExcelJS from 'exceljs';
 
 interface ChecklistItem {
   name: string;
-  found: boolean; // true/false only
-  text: string; // text content
-  url: string; // URL if it's a link
+  found: boolean;
+  text: string;
+  url: string;
+}
+
+interface SectionData {
+  sectionName: string;
+  items: ChecklistItem[];
 }
 
 class ChecklistManager {
@@ -15,6 +20,7 @@ class ChecklistManager {
   private workbook: ExcelJS.Workbook;
   private txtContent: string[];
   private fileItems: Map<string, ChecklistItem[]>;
+  private fileSections: Map<string, SectionData[]>; // New: track sections per file
   private directMessages: Map<string, string[]>;
 
   constructor(timestamp: string) {
@@ -35,11 +41,12 @@ class ChecklistManager {
     // file paths with timestamp
     this.excelPath = path.join(excelDir, `checklist-${timestamp}.xlsx`);
     this.txtPath = path.join(txtDir, `checklist-${timestamp}.txt`);
-    
+
     // initialize workbook and txt content
     this.workbook = new ExcelJS.Workbook();
     this.txtContent = [];
     this.fileItems = new Map();
+    this.fileSections = new Map(); // New
     this.directMessages = new Map();
   }
 
@@ -61,18 +68,97 @@ class ChecklistManager {
     this.fileItems.get(fileName)!.push(item);
   }
 
+  // New: add item to a specific section within a file
+  addItemToSection(fileName: string, sectionName: string, item: ChecklistItem) {
+    if (!this.fileSections.has(fileName)) {
+      this.fileSections.set(fileName, []);
+    }
+
+    const sections = this.fileSections.get(fileName)!;
+    let section = sections.find(s => s.sectionName === sectionName);
+
+    if (!section) {
+      section = { sectionName: sectionName, items: [] };
+      sections.push(section);
+    }
+
+    section.items.push(item);
+  }
+
+  // Calculate statistics for items
+  private calculateStats(items: ChecklistItem[]): { total: number; trueCount: number; falseCount: number; falseItems: ChecklistItem[] } {
+    const total = items.length;
+    const trueCount = items.filter(item => item.found).length;
+    const falseCount = total - trueCount;
+    const falseItems = items.filter(item => !item.found);
+    return { total, trueCount, falseCount, falseItems };
+  }
+
+  // Add section to Excel worksheet
+  private addSectionToExcel(worksheet: ExcelJS.Worksheet, sectionName: string, items: ChecklistItem[]) {
+    // Add section header row (with section name in first column)
+    worksheet.addRow([sectionName, '', '', '']);
+
+    // Add data rows
+    items.forEach(item => {
+      const found = item.found ? 'true' : 'false';
+      const text = item.found ? (item.text || '') : 'error';
+      const url = item.found ? (item.url || '') : 'error';
+      worksheet.addRow([item.name, found, text, url]);
+    });
+
+    // Add statistics row
+    const stats = this.calculateStats(items);
+    worksheet.addRow([`${stats.trueCount}/${stats.total} selector true`, '', '', '']);
+    if (stats.falseCount > 0) {
+      worksheet.addRow([`${stats.falseCount}/${stats.total} selector false`, '', '', '']);
+    }
+
+    // Add blank row
+    worksheet.addRow(['', '', '', '']);
+  }
+
+  // Add section to TXT
+  private addSectionToTxt(sectionName: string, items: ChecklistItem[]) {
+    this.txtContent.push(sectionName);
+
+    // Add each item
+    items.forEach(item => {
+      let itemLine = `${item.name}: ${item.found ? 'true' : 'false'}`;
+      if (item.text && item.text.trim() !== '') {
+        itemLine += ` (${item.text})`;
+      }
+      this.txtContent.push(itemLine);
+    });
+
+    // Add statistics
+    const stats = this.calculateStats(items);
+    this.txtContent.push(`${stats.trueCount}/${stats.total} selector true`);
+    if (stats.falseCount > 0) {
+      this.txtContent.push(`${stats.falseCount}/${stats.total} selector false`);
+      this.txtContent.push('false selector:');
+      stats.falseItems.forEach(item => {
+        this.txtContent.push(item.name);
+      });
+    }
+
+    // Add blank line
+    this.txtContent.push('');
+  }
+
   // add checklist for a file (all items collected for this file)
   async addFileChecklist(fileName: string, items: ChecklistItem[]) {
-    // add to Excel - new format
-    const worksheet = this.workbook.addWorksheet(fileName);
-    
-    // add header row: A=name, B=true/false, C=text, D=url
-    worksheet.addRow(['name', 't/f', 'text', 'url']);
-    
+    // Check if worksheet already exists, if so, get it; otherwise create new one
+    let worksheet = this.workbook.getWorksheet(fileName);
+    if (!worksheet) {
+      worksheet = this.workbook.addWorksheet(fileName);
+      // add header row: A=name, B=true/false, C=text, D=url
+      worksheet.addRow(['name', 't/f', 'text', 'url']);
+    }
+
     // add data rows
     items.forEach(item => {
       const found = item.found ? 'true' : 'false';
-      // If found is false, show "error" for text and url
       const text = item.found ? (item.text || '') : 'error';
       const url = item.found ? (item.url || '') : 'error';
       worksheet.addRow([item.name, found, text, url]);
@@ -80,28 +166,30 @@ class ChecklistManager {
 
     // add to TXT
     this.txtContent.push(fileName);
-    
+
     // Calculate statistics
-    const totalCount = items.length;
-    const trueCount = items.filter(item => item.found).length;
-    const falseItems = items.filter(item => !item.found);
-    
-    // Add each item (only name and true/false, no text or url)
+    const stats = this.calculateStats(items);
+
+    // Add each item
     items.forEach(item => {
-      this.txtContent.push(`${item.name}: ${item.found ? 'true' : 'false'}`);
+      let itemLine = `${item.name}: ${item.found ? 'true' : 'false'}`;
+      if (item.text && item.text.trim() !== '') {
+        itemLine += ` (${item.text})`;
+      }
+      this.txtContent.push(itemLine);
     });
-    
-    // Add statistics: x/y selector true
-    this.txtContent.push(`${trueCount}/${totalCount} selector true`);
-    
+
+    // Add statistics
+    this.txtContent.push(`${stats.trueCount}/${stats.total} selector true`);
+
     // Add false selectors if any
-    if (falseItems.length > 0) {
+    if (stats.falseItems.length > 0) {
       this.txtContent.push('false selector:');
-      falseItems.forEach(item => {
+      stats.falseItems.forEach(item => {
         this.txtContent.push(item.name);
       });
     }
-    
+
     this.txtContent.push(''); // empty line between files
   }
 
@@ -115,25 +203,79 @@ class ChecklistManager {
 
   // save all collected file checklists
   async save() {
-    // save all collected file checklists to Excel and TXT
-    for (const [fileName, items] of this.fileItems.entries()) {
-      await this.addFileChecklist(fileName, items);
+    // Process files with sections first
+    for (const [fileName, sections] of this.fileSections.entries()) {
+      let worksheet = this.workbook.getWorksheet(fileName);
+      if (!worksheet) {
+        worksheet = this.workbook.addWorksheet(fileName);
+        worksheet.addRow(['name', 't/f', 'text', 'url']);
+      }
+
+      // Process direct messages for this file FIRST (before sections)
+      if (this.directMessages.has(fileName)) {
+        const messages = this.directMessages.get(fileName)!;
+        messages.forEach((msg) => {
+          worksheet.addRow([msg]);
+        });
+        worksheet.addRow(['', '', '', '']);
+        this.txtContent.push(fileName);
+        messages.forEach((msg) => {
+          this.txtContent.push(msg);
+        });
+        this.txtContent.push(''); // Add blank line after direct messages
+      }
+
+      // Add each section
+      const allItems: ChecklistItem[] = [];
+      for (const section of sections) {
+        this.addSectionToExcel(worksheet, section.sectionName, section.items);
+        this.addSectionToTxt(section.sectionName, section.items);
+        allItems.push(...section.items);
+      }
+
+      // Add final summary
+      const finalStats = this.calculateStats(allItems);
+      worksheet.addRow([`Summary: ${finalStats.trueCount}/${finalStats.total} selector true`, '', '', '']);
+      if (finalStats.falseCount > 0) {
+        worksheet.addRow([`Summary: ${finalStats.falseCount}/${finalStats.total} selector false`, '', '', '']);
+      }
+
+      this.txtContent.push(`Summary: ${finalStats.trueCount}/${finalStats.total} selector true`);
+      if (finalStats.falseCount > 0) {
+        this.txtContent.push(`Summary: ${finalStats.falseCount}/${finalStats.total} selector false`);
+      }
+      this.txtContent.push('');
     }
 
-    // process direct messages (Excel + TXT)
-    for (const [worksheetName, messages] of this.directMessages.entries()) {
-      // Excel: each message is a new row (A1, A2, A3, ...)
-      const worksheet = this.workbook.addWorksheet(worksheetName);
-      messages.forEach((msg) => {
-        worksheet.addRow([msg]);
-      });
+    // save all collected file checklists to Excel and TXT (for files without sections)
+    for (const [fileName, items] of this.fileItems.entries()) {
+      // Skip if already processed as sections
+      if (!this.fileSections.has(fileName)) {
+        await this.addFileChecklist(fileName, items);
+      }
+    }
 
-      // TXT: title line + one line per message
-      this.txtContent.push(worksheetName);
-      messages.forEach((msg) => {
-        this.txtContent.push(msg);
-      });
-      this.txtContent.push(''); // empty line between message groups
+    // process direct messages for files WITHOUT sections (Excel + TXT)
+    for (const [worksheetName, messages] of this.directMessages.entries()) {
+      // Skip if already processed above (files with sections)
+      if (!this.fileSections.has(worksheetName)) {
+        let worksheet = this.workbook.getWorksheet(worksheetName);
+        if (!worksheet) {
+          worksheet = this.workbook.addWorksheet(worksheetName);
+        }
+
+        messages.forEach((msg) => {
+          worksheet.addRow([msg]);
+        });
+        // Add blank line in Excel after direct messages (move this line up)
+        worksheet.addRow(['', '', '', '']);
+
+        this.txtContent.push(worksheetName);
+        messages.forEach((msg) => {
+          this.txtContent.push(msg);
+        });
+        this.txtContent.push('');
+      }
     }
 
     // save Excel
@@ -145,5 +287,4 @@ class ChecklistManager {
     console.log('TXT checklist saved:', this.txtPath);
   }
 }
-
 export { ChecklistManager, ChecklistItem };

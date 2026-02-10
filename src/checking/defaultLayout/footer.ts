@@ -1,5 +1,5 @@
-import { ChecklistManager } from '../utils/checklist';
-import { getUrlIfLink, getTextIfExists } from '../utils/selectorContent';
+import { ChecklistManager } from '../../utils/checklist';
+import { getUrlIfLink, getTextIfExists } from '../../utils/selectorContent';
 
 interface LinkConfig {
   selector: string;
@@ -18,12 +18,12 @@ const footerLinks: LinkConfig[] = [
   { selector: 'div[data-id="05bb367"] a[href="/terms-and-conditions"]', name: 'terms and conditions link', category: 'footer' },
 ];
 
-async function checkLink(page: any, checklistManager: ChecklistManager, config: LinkConfig) {
+async function checkLink(page: any, checklistManager: ChecklistManager, config: LinkConfig, fileName: string) {
   const found = await checklistManager.checkElement(page, config.selector);
   const url = await getUrlIfLink(page, config.selector, found);
   const text = await getTextIfExists(page, config.selector, found);
   
-  checklistManager.addItemToFile(config.category, {
+  checklistManager.addItemToSection(fileName, 'footer', {
     name: config.name,
     found,
     text,
@@ -31,12 +31,12 @@ async function checkLink(page: any, checklistManager: ChecklistManager, config: 
   });
 }
 
-async function checkFooter(page: any, checklistManager: ChecklistManager) {
+async function checkFooter(page: any, checklistManager: ChecklistManager, fileName: string) {
   for (const link of footerLinks) {
-    await checkLink(page, checklistManager, link);
+    await checkLink(page, checklistManager, link, fileName);
   }
 }
 
-export async function footerCheck(page: any, checklistManager: ChecklistManager) {
-  await checkFooter(page, checklistManager);
+export async function footerCheck(page: any, checklistManager: ChecklistManager, fileName: string = 'footer') {
+  await checkFooter(page, checklistManager, fileName);
 }

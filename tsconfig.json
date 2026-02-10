@@ -13,6 +13,6 @@
       "moduleResolution": "node",
       "types": ["node"]
     },
-    "include": ["**/*.ts"],
+    "include": ["**/*.ts", "src/actions/test/direct_page"],
     "exclude": ["node_modules"]
   }

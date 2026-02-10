@@ -52,6 +52,20 @@ export async function setupBrowserAndRecorder(videoPath: string) {
   // Set up automatic tracking for new pages/tabs
   browser.on('targetcreated', async (target: any) => {
     const newPage = await target.page();
+    
+    // Check if this is a DevTools target (skip switching if it is)
+    const targetUrl = target.url();
+    const isDevTools = targetUrl && (
+      targetUrl.startsWith('devtools://') ||
+      targetUrl.includes('chrome-devtools://') ||
+      target.type() === 'other'
+    );
+    
+    if (isDevTools) {
+      console.log('DevTools detected, skipping page switch');
+      return;
+    }
+    
     if (newPage && newPage !== currentPage) {
       console.log('New page/tab detected, switching to it...');
       currentPage = newPage;
