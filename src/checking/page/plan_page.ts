@@ -18,7 +18,7 @@ const contentElements: ElementConfig[] = [
     { selector: 'div[data-id="90e3c93"] li.elementor-repeater-item-172ad62', name: 'Basic DOCX' },
     { selector: 'div[data-id="90e3c93"] li.elementor-repeater-item-2ef0511', name: 'Basic PPTX' },
     { selector: 'div[data-id="90e3c93"] li.elementor-repeater-item-d92f08a', name: 'Basic User' },
-    { selector: 'div[data-id="90e3c93"] div.elementor-price-table__footer', name: 'Basic Register Now' },
+    { selector: 'div[data-id="90e3c93"] a.elementor-price-table__button', name: 'Basic Register Now' },
     // Regular Plan
     { selector: 'div[data-id="05f1227"] div.elementor-price-table__header', name: 'Regular Header' },
     { selector: 'div[data-id="05f1227"] span.elementor-price-table__integer-part', name: 'Regular Price' },
@@ -29,7 +29,7 @@ const contentElements: ElementConfig[] = [
     { selector: 'div[data-id="05f1227"] li.elementor-repeater-item-b097505', name: 'Regular PPTX' },
     { selector: 'div[data-id="05f1227"] li.elementor-repeater-item-eaefe36', name: 'Regular per credit' },
     { selector: 'div[data-id="05f1227"] li.elementor-repeater-item-2b38867', name: 'Regular User' },
-    { selector: 'div[data-id="05f1227"] div.elementor-price-table__footer', name: 'Regular Buy Now' },
+    { selector: 'div[data-id="05f1227"] a.elementor-price-table__button', name: 'Regular Buy Now' },
     // Professional Plan
     { selector: 'div[data-id="2235d12"] div.elementor-price-table__header', name: 'Professional Header' },
     { selector: 'div[data-id="2235d12"] span.elementor-price-table__integer-part', name: 'Professional Price' },
@@ -41,7 +41,7 @@ const contentElements: ElementConfig[] = [
     { selector: 'div[data-id="2235d12"] li.elementor-repeater-item-01c8a0c', name: 'Professional PPTX' },
     { selector: 'div[data-id="2235d12"] li.elementor-repeater-item-3a09243', name: 'Professional per credit' },
     { selector: 'div[data-id="2235d12"] li.elementor-repeater-item-9d5af87', name: 'Professional User' },
-    { selector: 'div[data-id="2235d12"] div.elementor-price-table__footer', name: 'Professional Buy Now' },
+    { selector: 'div[data-id="2235d12"] a.elementor-price-table__button', name: 'Professional Buy Now' },
     // Enterprise Plan
     { selector: 'div[data-id="5a7948d"] div.elementor-price-table__header', name: 'Enterprise Header' },
     { selector: 'div[data-id="5a7948d"] span.elementor-price-table__integer-part', name: 'Enterprise Price' },
@@ -54,7 +54,7 @@ const contentElements: ElementConfig[] = [
     { selector: 'div[data-id="5a7948d"] li.elementor-repeater-item-436faf2', name: 'Enterprise per credit' },
     { selector: 'div[data-id="5a7948d"] li.elementor-repeater-item-ff06709', name: 'Enterprise User' },
     { selector: 'div[data-id="5a7948d"] li:nth-child(8)', name: 'Enterprise Share User' },
-    { selector: 'div[data-id="5a7948d"] div.elementor-price-table__footer', name: 'Enterprise Buy Now' },
+    { selector: 'div[data-id="5a7948d"] a.elementor-price-table__button', name: 'Enterprise Buy Now' },
     //Remark
     // strong:nth-child(1)
     { selector: 'div[data-id="bd567ac"] strong:nth-child(1)', name: 'Remark' },

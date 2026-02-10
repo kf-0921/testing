@@ -37,7 +37,7 @@ export const directAccountPage = (page: any, checklistManager: ChecklistManager)
     navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-account', 'Account', 'li.woocommerce-MyAccount-navigation-link--dashboard.is-active');
 
 export const directAllInOneServerPage = (page: any, checklistManager: ChecklistManager) =>
-    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-server', 'All-in-One Server', 'div[data-id="58594e8"] h2.elementor-heading-title');
+    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-server', 'All-in-One Server Page', 'div[data-id="58594e8"] h2.elementor-heading-title');
 
 export const directBlogPage = (page: any, checklistManager: ChecklistManager) =>
     navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-blog', 'Blog', 'div[data-id="8848ff3"] div.elth-dropdown-box');
