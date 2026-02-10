@@ -1,7 +1,0 @@
-login
-login button: true
-username input: true
-password input: true
-login submit button: true
-check login element: true
-5/5 selector true
