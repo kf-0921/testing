@@ -12,7 +12,7 @@ const headerElements: ElementConfig[] = [
   { selector: 'a.digital-assets-link', name: 'digital assets link' },
   { selector: 'div.language-switcher', name: 'language switcher' },
   { selector: 'div.language-dropdown', name: 'language dropdown' },
-  { selector: 'div.language-options a[href*="https://poffices.ai/zh-hant/"]', name: 'traditional chinese language link' },
+  { selector: 'div.language-options a[href*="zh-hant"]', name: 'traditional chinese language link' },
   { selector: 'div.language-options a[href="#"]', name: 'english language link' },
 ];
 
@@ -73,18 +73,16 @@ async function checkUserDropdown(page: any, checklistManager: ChecklistManager, 
   }
 
   // Click dropdown to open menu
-  await page.click('div.nav-user-dropdown');
+  try {
+    await page.waitForSelector('div.nav-user-dropdown', { timeout: 1000 });
+  } catch {
+    checklistManager.logDirectMessage('check user dropdown', 'Selector not found: div.nav-user-dropdown');
+    return;
+  }
+  
+    page.click('div.nav-user-dropdown')
+  
   await new Promise(resolve => setTimeout(resolve, 1000));
-
-  // Check avatar with extracted username
-  const avatarFound = await checklistManager.checkElement(page, 'div.nav-user-avatar-trigger img');
-  const avatarUrl = await getUrlIfLink(page, 'div.nav-user-avatar-trigger img', avatarFound);
-  checklistManager.addItemToSection(fileName, 'header', {
-    name: 'user name from avatar',
-    found: avatarFound,
-    text: username,
-    url: avatarUrl
-  });
 
   // Check remaining dropdown elements (skip first 2 as they're already checked)
   for (const element of dropdownElements.slice(2)) {

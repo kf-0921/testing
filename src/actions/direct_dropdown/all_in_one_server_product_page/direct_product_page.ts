@@ -1,11 +1,17 @@
 import { ChecklistManager } from "../../../utils/checklist";
 import { directAllInOneServerPage } from "../direct_dropdown";
+import { getPageLanguageInfo } from "../../../checking/language/page_language";
 
 // Helper function to navigate to account page and click a navigation link
 async function navigateToAllInOneServerProductPage(page: any, checklistManager: ChecklistManager, selector: string, linkName: string, validateElement: string) {
     await directAllInOneServerPage(page, checklistManager);
 
-    await page.waitForSelector(selector, { timeout: 10000 });
+    try {
+        await page.waitForSelector(selector, { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('All-in-One Server Page', `Selector not found: ${selector}`);
+        return;
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log(`${linkName} link element is visible!`);
     console.log(`click ${linkName} link...`);
@@ -18,13 +24,17 @@ async function navigateToAllInOneServerProductPage(page: any, checklistManager: 
     //validate if redirected to the correct page
     const validateElementCheck = await page.$(validateElement);
     if (validateElementCheck) {
-        checklistManager.logDirectMessage('direct product page', `Selector found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage('direct product page', `confirm redirect to ${linkName} page success!`);
+        checklistManager.logDirectMessage('All-in-One Server Page', `Selector found: ${validateElementCheck}`);
+        checklistManager.logDirectMessage('All-in-One Server Page', `confirm redirect to ${linkName} page success!`);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
         return validateElementCheck;
     } else {
-        checklistManager.logDirectMessage('direct product page', `Selector not found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage('direct product page', `redirect to ${linkName} page failed!`);
-        throw new Error(`redirect to ${linkName} page failed!`);
+        checklistManager.logDirectMessage('All-in-One Server Page', `Selector not found: ${validateElementCheck}`);
+        checklistManager.logDirectMessage('All-in-One Server Page', `redirect to ${linkName} page failed!`);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
+        return;
     }
 }
 

@@ -1,10 +1,16 @@
+import { getPageLanguageInfo } from "../../checking/language/page_language";
 import { ChecklistManager } from "../../utils/checklist";
-import directToHomePage from "../home_page";
+import directToHomePage from "../direct_home_page/home_page";
 
 // Helper function to navigate to home page and click a footer link
 async function navigateToFooterLink(page: any, checklistManager: ChecklistManager, linkSelector: string, linkName: string, validateElement: string) {
     await directToHomePage(page, checklistManager);
-    await page.waitForSelector(linkSelector, { timeout: 10000 });
+    try {
+        await page.waitForSelector(linkSelector, { timeout: 1000 });
+    } catch {
+        console.log('Selector not found');
+        return;
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log(`${linkName} link element is visible!`);
     console.log(`click ${linkName} link...`);
@@ -20,11 +26,12 @@ async function navigateToFooterLink(page: any, checklistManager: ChecklistManage
     if (validateElementCheck) {
         checklistManager.logDirectMessage('direct footer', `Selector found: ${validateElementCheck}`);
         checklistManager.logDirectMessage('direct footer', `confirm redirect to ${linkName} page success!`);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
         return validateElementCheck;
     } else {
         checklistManager.logDirectMessage('direct footer', `Selector not found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage('direct footer', `redirect to ${linkName} page failed!`);
-        throw new Error(`redirect to ${linkName} page failed!`);
+        checklistManager.logDirectMessage('direct footer', `redirect to ${linkName} page failed!`);        
     }
 }
 

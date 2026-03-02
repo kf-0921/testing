@@ -9,7 +9,7 @@ export async function serverRegularCheck(page: any, checklistManager: ChecklistM
 
     // navigate to plan page
     console.log('navigate to server b1 order page...');
-    await directServerB1Order(page);
+    await directServerB1Order(page, checklistManager);
     console.log('server b1 order page loaded...');
     // apply coupon
     console.log('start applying coupon...');
@@ -18,7 +18,12 @@ export async function serverRegularCheck(page: any, checklistManager: ChecklistM
     // navigate to checkout page
     console.log('navigate to checkout page...');
     await new Promise(resolve => setTimeout(resolve, 2000));
-    await page.waitForSelector('a.checkout-button', { timeout: 10000 });
+    try {
+        await page.waitForSelector('a.checkout-button', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('checkout', 'Selector not found: a.checkout-button');
+        return;
+    }
     await Promise.all([
         page.waitForNavigation({ waitUntil: 'networkidle0' }),
         page.click('a.checkout-button')
@@ -29,7 +34,12 @@ export async function serverRegularCheck(page: any, checklistManager: ChecklistM
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // click place order button
-    await page.waitForSelector('button.button.alt', { timeout: 10000 });
+    try {
+        await page.waitForSelector('button.button.alt', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('checkout', 'Selector not found: button.button.alt');
+        return;
+    }
     await Promise.all([
         page.waitForNavigation({ waitUntil: 'networkidle0' }),
         page.click('button.button.alt')

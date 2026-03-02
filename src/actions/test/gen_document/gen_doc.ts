@@ -1,4 +1,4 @@
-import directToHomePage from "../../home_page";
+import directToHomePage from "../../direct_home_page/home_page";
 import { genInput } from "./gen_input";
 import { genUploadFile } from "./gen_upload_file";
 import { genAgent } from "./gen_agent";

@@ -7,7 +7,7 @@ import { testDirectNewsPage } from "../../direct_dropdown/news/direct_news_page"
 import { testDirectPlanPage } from "../../direct_dropdown/plan/direct_plan_page";
 import { testDirectFooter } from "../../direct_footer/direct_footer";
 import { testHistoryPage } from "../../direct_history_page/history_page";
-import { testHomePage } from "../../home_page";
+import { testHomePage } from "../../direct_home_page/home_page";
 import { ChecklistManager } from "../../../utils/checklist";
 
 

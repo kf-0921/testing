@@ -9,26 +9,25 @@ interface ElementConfig {
 }
 
 
-const staticElements: ElementConfig[] = [
-    // Filter title + Reset button
+// TC-HISTORY-FILTER-001: popup opens with filter title and reset button
+const filter001Elements: ElementConfig[] = [
     { selector: 'div.css-1xdhyk6 h2.css-2sdbyo', name: 'filter title' },
     { selector: 'div.css-1xdhyk6 button.css-j0qll3', name: 'reset button' },
+];
 
-    // Office name
+// TC-HISTORY-FILTER-002: office name, agent name, period, period from/to
+const filter002Elements: ElementConfig[] = [
     { selector: 'div.css-1xdhyk6 p.css-1y04kt4:nth-of-type(1)', name: 'office name' },
-    // Agent Name
     { selector: 'div.css-1xdhyk6 p.css-1y04kt4:nth-of-type(2)', name: 'agent name' },
-    // Period
     { selector: 'div.css-1xdhyk6 p.css-1y04kt4:nth-of-type(3)', name: 'period' },
-
     { selector: 'div.MuiPopper-root.css-1xdhyk6 div.MuiGrid-root.MuiGrid-container.MuiGrid-direction-xs-row.date-range.css-13jedc0 div:nth-child(1) > p', name: 'period from' },
     { selector: '#filter-period-start', name: 'period from input' },
     { selector: 'div.MuiPopper-root.css-1xdhyk6 div.MuiGrid-root.MuiGrid-container.MuiGrid-direction-xs-row.date-range.css-13jedc0 div:nth-child(2) > p', name: 'period to' },
-    { selector: '#filter-period-end', name: 'period to input' }
+    { selector: '#filter-period-end', name: 'period to input' },
 ];
 
-// Specific Office options configuration (using checkbox value)
-const officeOptionsByValue: { value: string; name: string }[] = [
+// TC-HISTORY-FILTER-003: details of office name
+const filter003Elements: { value: string; name: string }[] = [
     { value: '1', name: 'General Office filter' },
     { value: '2', name: 'Business Office filter' },
     { value: '3', name: 'Strategy Office filter' },
@@ -44,7 +43,8 @@ const officeOptionsByValue: { value: string; name: string }[] = [
     { value: '16', name: 'Data Office filter' },
 ];
 
-const agentTypeOptionsByValue: { value: string; name: string }[] = [
+// TC-HISTORY-FILTER-004: details of agent name
+const filter004Elements: { value: string; name: string }[] = [
     { value: 'general', name: '1st General' },
     { value: 'follow-up-query', name: 'Follow Up Query' },
     { value: 'agent-finder', name: 'Agent Finder' },
@@ -81,7 +81,7 @@ const agentTypeOptionsByValue: { value: string; name: string }[] = [
     { value: 'lectureexam', name: 'Lecture Exam' },
     { value: 'blogarticle', name: 'Blog Article' },
     { value: 'socmediapost', name: 'Soc Media Post' },
-    { value: 'script', name: 'Script' },
+    { value: 'mcscript', name: 'MC Script' },
     { value: 'pressrelease', name: 'Press Release' },
     { value: 'proddescription', name: 'Product Description' },
     { value: 'advertplan', name: 'Advertisement Plan' },
@@ -102,12 +102,12 @@ const agentTypeOptionsByValue: { value: string; name: string }[] = [
     { value: 'employcontract', name: 'Employment Contract' },
 
     { value: 'speechtopic', name: 'Speech Topic Ideation' },
-    { value: 'speechreview', name: 'Speech Topic Review' },
+    { value: 'speakerideation', name: 'Speaker Ideation' },
     { value: 'speechintro', name: 'Speech Introduction' },
     { value: 'speechnote', name: 'Speech Note' },
     { value: 'speechscript', name: 'Speech Script' },
 
-    { value: 'investmentsurvey', name: 'Investment Market Survey' },
+    { value: 'investmentmarketreview', name: 'Investment Market Review' },
     { value: 'investmentreview', name: 'Investment Project Review' },
     { value: 'investmentportfolio', name: 'Investment Portfolio Proposal' },
     { value: 'investmentplan', name: 'Investment Execution Plan' },
@@ -144,7 +144,7 @@ const agentTypeOptionsByValue: { value: string; name: string }[] = [
 
     { value: 'resume', name: 'Resume or CV' },
     { value: 'biography', name: 'Biography' },
-    { value: 'letter', name: 'Job Application Letter' },
+    { value: 'jobletter', name: 'Job Application Letter' },
     { value: 'essay', name: 'Essay Writer' },
     { value: 'selflearning', name: 'Self-Learning Q&A' },
 
@@ -178,7 +178,7 @@ const agentTypeOptionsByValue: { value: string; name: string }[] = [
     { value: 'Web-Image-linker', name: 'Web and Image link Searcher' },
 
     { value: 'budget', name: 'Budget and Offer' },
-    { value: 'problemstatement', name: 'Problem Statement' },
+    { value: 'marketdemand', name: 'Market Demand' },
     { value: 'objective', name: 'Objective' },
 
     { value: 'lectureppt', name: 'Lecture PPT' },
@@ -216,9 +216,10 @@ async function checkOfficeOptionByValue(page: any, checklistManager: ChecklistMa
     });
 }
 
-async function checkAgentTypeOptionByValue(page: any, checklistManager: ChecklistManager, value: string, displayName: string) {
+async function checkAgentTypeOptionByValue(page: any, checklistManager: ChecklistManager, value: string, displayName: string): Promise<boolean> {
     const selector = `div.css-1xdhyk6 input[type="checkbox"][value="${value}"]`;
     const found = await checklistManager.checkElement(page, selector);
+
 
     let text = '';
     if (found) {
@@ -243,12 +244,13 @@ async function checkAgentTypeOptionByValue(page: any, checklistManager: Checklis
         text: text ? `${text} (value: ${value})` : displayName,
         url: ''
     });
+
+    return found;
 }
 
 async function checkElement(page: any, checklistManager: ChecklistManager, config: ElementConfig) {
     const found = await checklistManager.checkElement(page, config.selector);
     const text = await getTextIfExists(page, config.selector, found);
-
     checklistManager.addItemToSection('History Page', 'History Filter', {
         name: config.name,
         found,
@@ -257,16 +259,46 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
     });
 }
 
-async function checkHistoryFilter(page: any, checklistManager: ChecklistManager) {
-    for (const element of staticElements) {
-        await checkElement(page, checklistManager, element);
+async function checkElements(page: any, checklistManager: ChecklistManager, elements: ElementConfig[]) {
+    for (const config of elements) {
+        await checkElement(page, checklistManager, config);
     }
-    for (const office of officeOptionsByValue) {
+}
+
+// REPLACE the existing checkHistoryFilter and export with:
+async function checkHistoryFilter(page: any, checklistManager: ChecklistManager) {
+    await checkElements(page, checklistManager, filter001Elements);
+    await checkElements(page, checklistManager, filter002Elements);
+    for (const office of filter003Elements) {
         await checkOfficeOptionByValue(page, checklistManager, office.value, office.name);
     }
-    for (const agentType of agentTypeOptionsByValue) {
+    for (const agentType of filter004Elements) {
         await checkAgentTypeOptionByValue(page, checklistManager, agentType.value, agentType.name);
     }
+}
+
+export async function historyFilterCheckTC001(page: any, checklistManager: ChecklistManager) {
+    await checkElements(page, checklistManager, filter001Elements);
+}
+
+export async function historyFilterCheckTC002(page: any, checklistManager: ChecklistManager) {
+    await checkElements(page, checklistManager, filter002Elements);
+}
+
+export async function historyFilterCheckTC003(page: any, checklistManager: ChecklistManager) {
+    for (const office of filter003Elements) {
+        await checkOfficeOptionByValue(page, checklistManager, office.value, office.name);
+    }
+}
+
+export async function historyFilterCheckTC004(page: any, checklistManager: ChecklistManager) {
+    const total = filter004Elements.length;
+    let foundCount = 0;
+    for (const agentType of filter004Elements) {
+        const found = await checkAgentTypeOptionByValue(page, checklistManager, agentType.value, agentType.name);
+        if (found) foundCount++;
+    }
+    console.log(`History Filter - Agent type options: recorded ${total}, found ${foundCount}`);
 }
 
 export async function historyFilterCheck(page: any, checklistManager: ChecklistManager) {

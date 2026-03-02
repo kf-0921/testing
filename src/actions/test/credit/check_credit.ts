@@ -1,12 +1,17 @@
 import { ChecklistManager } from "../../../utils/checklist";
 import { getUrlIfLink, getTextIfExists } from "../../../utils/selectorContent";
-import directToHomePage from "../../../actions/home_page";
+import directToHomePage from "../../direct_home_page/home_page";
 
 
 
 export async function checkCredit(page: any, checklistManager: ChecklistManager) {
-    await directToHomePage(page);
-    await page.waitForSelector('div.nav-user-dropdown', { timeout: 10000 });
+    await directToHomePage(page, checklistManager);
+    try {
+        await page.waitForSelector('div.nav-user-dropdown', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('credit', 'Selector not found: div.nav-user-dropdown');
+        return '';
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log('click User dropdown...');
 

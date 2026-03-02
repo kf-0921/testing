@@ -1,11 +1,17 @@
 import { directAccountPage } from "../direct_dropdown";
 import { ChecklistManager } from "../../../utils/checklist";
+import { getPageLanguageInfo } from "../../../checking/language/page_language";
 
 // Helper function to navigate to account page and click a navigation link
 async function navigateInAccountPage(page: any, checklistManager: ChecklistManager, selector: string, linkName: string, validateElement: string) {
     await directAccountPage(page, checklistManager);
 
-    await page.waitForSelector(selector, { timeout: 10000 });
+    try {
+        await page.waitForSelector(selector, { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('Account Page', `Selector not found: ${selector}`);
+        return;
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log(`${linkName} link element is visible!`);
     console.log(`click ${linkName} link...`);
@@ -21,12 +27,14 @@ async function navigateInAccountPage(page: any, checklistManager: ChecklistManag
     //validate if redirected to the correct page
     const validateElementCheck = await page.$(validateElement);
     if (validateElementCheck) {
-        checklistManager.logDirectMessage('direct account dashboard', `Selector found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage('direct account dashboard', `confirm redirect to ${linkName} page success!`);
+        checklistManager.logDirectMessage('Account Page', `Selector found: ${validateElementCheck}`);
+        checklistManager.logDirectMessage('Account Page', `confirm redirect to ${linkName} page success!`);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
         return validateElementCheck;
     } else {
-        checklistManager.logDirectMessage('direct account dashboard', `Selector not found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage('direct account dashboard', `redirect to ${linkName} page failed!`);
+        checklistManager.logDirectMessage('Account Page', `Selector not found: ${validateElementCheck}`);
+        checklistManager.logDirectMessage('Account Page', `redirect to ${linkName} page failed!`);
     }
 }
 
@@ -87,7 +95,12 @@ export async function directAccountAddressEdit(page: any, checklistManager: Chec
 
     // Then click the address edit element
     const addressEditSelector = 'div.woocommerce-Address a';
-    await page.waitForSelector(addressEditSelector, { timeout: 10000 });
+    try {
+        await page.waitForSelector(addressEditSelector, { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('Account Page', 'Selector not found: div.woocommerce-Address a');
+        return;
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log('Address edit element is visible!');
     console.log('click Address edit element...');
@@ -100,12 +113,14 @@ export async function directAccountAddressEdit(page: any, checklistManager: Chec
     //validate if redirected to the correct page
     const validateElementCheck = await page.$('input[id="update_all_subscriptions_addresses"]');
     if (validateElementCheck) {
-        checklistManager.logDirectMessage('direct account address edit', `Selector found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage('direct account address edit', `confirm redirect to Account address edit page success!`);
+        checklistManager.logDirectMessage('Account Page', `Selector found: ${validateElementCheck}`);
+        checklistManager.logDirectMessage('Account Page', `confirm redirect to Account address edit page success!`);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
         return validateElementCheck;
     } else {
-        checklistManager.logDirectMessage('direct account address edit', `Selector not found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage('direct account address edit', `redirect to Account address edit page failed!`);
+        checklistManager.logDirectMessage('Account Page', `Selector not found: ${validateElementCheck}`);
+        checklistManager.logDirectMessage('Account Page', `redirect to Account address edit page failed!`);
     }
 }
 

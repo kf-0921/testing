@@ -1,11 +1,17 @@
-import directToHomePage from "../home_page";
+import directToHomePage from "../direct_home_page/home_page";
 import { ChecklistManager } from "../../utils/checklist";
+import { getPageLanguageInfo } from "../../checking/language/page_language";
 
 // Helper function to click user dropdown and navigate to a link
 async function navigateViaDropdown(page: any, checklistManager: ChecklistManager, linkSelector: string, linkName: string, validateElement: string) {
     await directToHomePage(page, checklistManager);
 
-    await page.waitForSelector('div.nav-user-dropdown', { timeout: 10000 });
+    try {
+        await page.waitForSelector('div.nav-user-dropdown', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('direct dropdown', 'Selector not found: div.nav-user-dropdown');
+        return;
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log('click User dropdown...');
 
@@ -25,16 +31,18 @@ async function navigateViaDropdown(page: any, checklistManager: ChecklistManager
     const validateElementCheck = await page.$(validateElement);
     if (validateElementCheck) {
         checklistManager.logDirectMessage(`${linkName}`, `Selector found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage(`${linkName}`, `confirm redirect to ${linkName} page success!`);
+        checklistManager.logDirectMessage(`${linkName}`, `confirm redirect to ${linkName} success!`);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
         return validateElementCheck;
     } else {
         checklistManager.logDirectMessage(`${linkName}`, `Selector not found: ${validateElementCheck}`);
-        checklistManager.logDirectMessage(`${linkName}`, `redirect to ${linkName} page failed!`);
+        checklistManager.logDirectMessage(`${linkName}`, `redirect to ${linkName} failed!`);
     }
 }
 
 export const directAccountPage = (page: any, checklistManager: ChecklistManager) =>
-    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-account', 'Account', 'li.woocommerce-MyAccount-navigation-link--dashboard.is-active');
+    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-account', 'Account Page', 'li.woocommerce-MyAccount-navigation-link--dashboard.is-active');
 
 export const directAllInOneServerPage = (page: any, checklistManager: ChecklistManager) =>
     navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-server', 'All-in-One Server Page', 'div[data-id="58594e8"] h2.elementor-heading-title');
@@ -43,13 +51,13 @@ export const directBlogPage = (page: any, checklistManager: ChecklistManager) =>
     navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-blog', 'Blog', 'div[data-id="8848ff3"] div.elth-dropdown-box');
 
 export const directEnterprisePage = (page: any, checklistManager: ChecklistManager) =>
-    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-enterprise', 'Enterprise', 'div.elementor-element-15058ed div.css-1rd7swq');
+    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-enterprise', 'Enterprise Page', 'div.elementor-element-15058ed div.css-1rd7swq');
 
 export const directFAQPage = (page: any, checklistManager: ChecklistManager) =>
-    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-faq', 'FAQ', 'div[data-elementor-id="13337"] div[data-id="15d6ea0"]  div[data-id="2ed5bdb"]');
+    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-faq', 'FAQ Page', 'div[data-elementor-id="13337"] div[data-id="15d6ea0"]  div[data-id="2ed5bdb"]');
 
 export const directNewsPage = (page: any, checklistManager: ChecklistManager) =>
-    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-news', 'News', 'div[data-id="1432875"] div.news-categories');
+    navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-news', 'News Page', 'div[data-id="1432875"] div.news-categories');
 
 export const directPaymentPage = (page: any, checklistManager: ChecklistManager) =>
     navigateViaDropdown(page, checklistManager, 'a#nav-dropdown-payment', 'Payment', 'li.woocommerce-MyAccount-navigation-link--orders.is-active');

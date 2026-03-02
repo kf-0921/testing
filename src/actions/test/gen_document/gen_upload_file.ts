@@ -7,12 +7,18 @@ export async function genUploadFile(page: any) {
   console.log('start uploading file...');
 
   // 1. 等待 input[type=file] 出現
-  await page.waitForSelector(fileInputSelector);
+  try {
+    await page.waitForSelector(fileInputSelector, { timeout: 1000 });
+  } catch {
+    console.log(`Selector not found: ${fileInputSelector}`);
+    return false;
+  }
 
   // 2. 取得 input element handle
   const fileInput = await page.$(fileInputSelector);
   if (!fileInput) {
-    throw new Error(`File input not found for selector: ${fileInputSelector}`);
+    console.log(`File input not found for selector: ${fileInputSelector}`);
+    return false;
   }
 
   // 3. 準備要上傳的檔案路徑（可放多個）

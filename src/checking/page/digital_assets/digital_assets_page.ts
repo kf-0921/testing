@@ -8,7 +8,8 @@ interface ElementConfig {
     name: string;
 }
 
-const contentElements: ElementConfig[] = [
+// TC-DIGITAL-001: page loads with title, description, filter section
+const digital001Elements: ElementConfig[] = [
     { selector: 'div.css-1f11l0v h1.css-j95cc2', name: 'title' },
     { selector: 'div.css-1f11l0v h2.css-2sdbyo', name: 'description' },
     { selector: 'div.css-1f11l0v input.css-19yaakh', name: 'search input' },
@@ -21,6 +22,10 @@ const contentElements: ElementConfig[] = [
     { selector: 'div.css-1j73i39 li:nth-child(5)', name: 'failed' },
     { selector: 'div.css-kbpp77 label.css-94rmli[for="«r3»"]', name: 'from' },
     { selector: 'div.css-kbpp77 label.css-94rmli[for="«r6»"]', name: 'to' },
+];
+
+// TC-DIGITAL-002: uploaded file list
+const digital002Elements: ElementConfig[] = [
     { selector: 'div.css-8atqhb div.css-79elbk h6.css-1ur3k42', name: 'file upload' },
     { selector: 'div.css-8atqhb div.css-79elbk button.css-4uqbz6', name: 'download button' },
     { selector: 'div.css-8atqhb div.css-79elbk button.css-2ght9s', name: 'delete button' },
@@ -37,7 +42,6 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
     const found = await checklistManager.checkElement(page, config.selector);
     const url = await getUrlIfLink(page, config.selector, found);
     const text = await getTextIfExists(page, config.selector, found);
-
     checklistManager.addItemToSection('Digital Assets Page', 'Digital Assets Page', {
         name: config.name,
         found,
@@ -46,16 +50,47 @@ async function checkElement(page: any, checklistManager: ChecklistManager, confi
     });
 }
 
-async function checkDigitalAssetsPage(page: any, checklistManager: ChecklistManager) {
-    for (const element of contentElements) {
-        await checkElement(page, checklistManager, element);
+async function checkElements(page: any, checklistManager: ChecklistManager, elements: ElementConfig[]) {
+    for (const config of elements) {
+        await checkElement(page, checklistManager, config);
     }
 }
 
-export async function digitalAssetsPageCheck(page: any, checklistManager: ChecklistManager) {
+const sectionName = 'Digital Assets Page';
+
+export async function digitalAssetsPageCheckTC001(page: any, checklistManager: ChecklistManager) {
+    try {
+        await page.waitForSelector('div.css-lg7qn5', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('digital assets page check TC001', 'Selector not found: div.css-lg7qn5');
+        return;
+    }
     await page.click('div.css-lg7qn5');
     await new Promise(resolve => setTimeout(resolve, 1000));
-    await checkDigitalAssetsPage(page, checklistManager);
-    await loginHeaderCheck(page, checklistManager, 'Digital Assets Page');
-    await footerCheck(page, checklistManager, 'Digital Assets Page');
+    await checkElements(page, checklistManager, digital001Elements);
+}
+
+export async function digitalAssetsPageCheckTC002(page: any, checklistManager: ChecklistManager) {
+    await checkElements(page, checklistManager, digital002Elements);
+}
+
+export async function digitalAssetsPageCheckTC003(page: any, checklistManager: ChecklistManager) {
+    await loginHeaderCheck(page, checklistManager, sectionName);
+    await footerCheck(page, checklistManager, sectionName);
+}
+
+export async function digitalAssetsPageCheck(page: any, checklistManager: ChecklistManager) {
+    //clear all filters
+    try {
+        await page.waitForSelector('div.css-lg7qn5', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('digital assets page check', 'Selector not found: div.css-lg7qn5');
+        return;
+    }
+    await page.click('div.css-lg7qn5');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await checkElements(page, checklistManager, digital001Elements);
+    await checkElements(page, checklistManager, digital002Elements);
+    await loginHeaderCheck(page, checklistManager, sectionName);
+    await footerCheck(page, checklistManager, sectionName);
 }

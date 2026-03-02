@@ -3,7 +3,7 @@ import { setupDirectories, setupBrowserAndRecorder, cleanup, createChecklistMana
 import { loginStep } from './actions/login';
 import { takeScreenshot } from './utils/screenshot';
 import { loginHeaderCheck } from './checking/defaultLayout/login_header';
-import directToHomePage from './actions/home_page';
+import directToHomePage from './actions/direct_home_page/home_page';
 import { footerCheck } from './checking/defaultLayout/footer';
 import { directAccountAccountDetails } from './actions/direct_dropdown/account/direct_account_dashboard';
 import { planRegularCheckOut } from './actions/test/checkout/plan_regular_check_out';
@@ -13,6 +13,7 @@ import { checkCredit, creditCount } from './actions/test/credit/check_credit';
 import { genDoc } from './actions/test/gen_document/gen_doc';
 import { testDirectPage } from './actions/test/direct_page/test_direct_page';
 import { checkAllElements } from './checking/allCheck';
+import { runTestCase } from './testcase/run_testcase';
 
 
 // main function
@@ -40,7 +41,13 @@ async function testPoffices() {
       await loginStep(page, checklistManager);
     };
     // regular plan step
-  
+    const PlanRegularCheckOutStep = async () => {
+      await planRegularCheckOut(page, checklistManager);
+    };
+    // server b1 step
+    const ServerB1CheckOutStep = async () => {
+      await serverRegularCheck(page, checklistManager);
+    };
     // direct to home page
     const DirectToHomePage = async () => {
       await directToHomePage(page, checklistManager);
@@ -55,6 +62,10 @@ async function testPoffices() {
     const FooterCheck = async () => {
       await footerCheck(page, checklistManager);
     };
+    // run test case
+    const RunTestCase = async () => {
+      await runTestCase(page, checklistManager);
+    };
 
 
     // direct account address step
@@ -64,25 +75,35 @@ async function testPoffices() {
 
     try {
       //login step
-      await DirectToHomePage();
-      await LoginStep();
-      // check credit
+      // await DirectToHomePage();
+      // await LoginStep();
+
+
+      // // regular plan step
+      // await PlanRegularCheckOutStep();
+      // // server b1 step
+      // await ServerB1CheckOutStep();
+
+      // // check credit
       // const startCredit = await checkCredit(page, checklistManager);
-      
+      // //gen document step
+      // await genDoc(page, checklistManager);
+      // // // credit count
+      // const endCredit = await checkCredit(page, checklistManager);
+      // await creditCount(startCredit, endCredit, checklistManager);
 
-      
-    
+
+
+
       // await testDirectPage(page, checklistManager);
-      await checkAllElements(page, checklistManager);
+      // await checkAllElements(page, checklistManager);
+
+      await RunTestCase();
 
 
 
 
 
-
-      // // credit count
-      //const endCredit = await checkCredit(page, checklistManager);
-      //await creditCount(startCredit, endCredit, checklistManager);
       // take screenshot
       await takeScreenshot(page, screenshotPath);
       // save checklist files

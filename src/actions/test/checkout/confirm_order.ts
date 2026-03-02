@@ -2,7 +2,7 @@ import { directAccountOrders } from "../../direct_dropdown/account/direct_accoun
 import { ChecklistManager } from '../../../utils/checklist';
 
 // confirm order
-async function confirmOrder(page: any): Promise<string | null> {
+async function confirmOrder(page: any, checklistManager: ChecklistManager): Promise<string | null> {
     console.log('checking for order number...');
     const orderNumberElement = await page.$('li.woocommerce-order-overview__order strong');
     if (orderNumberElement) {
@@ -17,12 +17,12 @@ async function confirmOrder(page: any): Promise<string | null> {
     }
 }
 
-async function checkOrder(page: any, orderNumber: string | null): Promise<string | null> {
+async function checkOrder(page: any, checklistManager: ChecklistManager, orderNumber: string | null): Promise<string | null> {
     if (!orderNumber) {
         console.log('Order number is not available, cannot check order');
         return null;
     }
-    await directAccountOrders(page);
+    await directAccountOrders(page, checklistManager);
     await new Promise(resolve => setTimeout(resolve, 2000));
     console.log(`Checking order for order number: ${orderNumber}`);
     
@@ -80,8 +80,8 @@ async function checkOrder(page: any, orderNumber: string | null): Promise<string
 }
 
 export async function confirmOrderStep(page: any, checklistManager: ChecklistManager) {
-    const orderNumber = await confirmOrder(page);
-    const orderStatus = await checkOrder(page, orderNumber);
+    const orderNumber = await confirmOrder(page, checklistManager);
+    const orderStatus = await checkOrder(page, checklistManager, orderNumber);
     
     // if order number is found, log to Excel and TXT
     if (orderNumber) {

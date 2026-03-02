@@ -1,10 +1,16 @@
 import { directBlogPage } from "../direct_dropdown";
 import { ChecklistManager } from "../../../utils/checklist";
+import { getPageLanguageInfo } from "../../../checking/language/page_language";
 
 // Helper function to navigate to account page and click a navigation link
-async function navigateToAllInOneServerProductPage(page: any, checklistManager: ChecklistManager, selector: string, linkName: string, validateElement: string | null = null) {
+async function navigateToBlogPage(page: any, checklistManager: ChecklistManager, selector: string, linkName: string, validateElement: string | null = null) {
     await directBlogPage(page, checklistManager);
-    await page.waitForSelector('.readmore-wrap a.elth-bt-default');
+    try {
+        await page.waitForSelector('.readmore-wrap a.elth-bt-default', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('direct blog page', 'Selector not found: .readmore-wrap a.elth-bt-default');
+        return;
+    }
 
     await Promise.all([
         page.waitForNavigation({ waitUntil: 'networkidle0' }),
@@ -13,7 +19,12 @@ async function navigateToAllInOneServerProductPage(page: any, checklistManager: 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
 
-    await page.waitForSelector(selector, { timeout: 10000 });
+    try {
+        await page.waitForSelector(selector, { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('direct blog page', `Selector not found: ${selector}`);
+        return;
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log(`${linkName} link element is visible!`);
     console.log(`click ${linkName} link...`);
@@ -28,11 +39,15 @@ async function navigateToAllInOneServerProductPage(page: any, checklistManager: 
 
     if (validateElement === 'cart') {
         await validateInCart(page, checklistManager, linkName);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
     } else if (validateElement) {
         const validateElementCheck = await page.$(validateElement);
         if (validateElementCheck) {
             checklistManager.logDirectMessage('direct blog page', `Selector found: ${validateElementCheck}`);
             checklistManager.logDirectMessage('direct blog page', `confirm redirect to ${linkName} page success!`);
+            //check page language
+            await getPageLanguageInfo(page, checklistManager);
             return validateElementCheck;
         } else {
             checklistManager.logDirectMessage('direct blog page', `Selector not found: ${validateElementCheck}`);
@@ -40,11 +55,18 @@ async function navigateToAllInOneServerProductPage(page: any, checklistManager: 
         }
     } else {
         await validateDirectedPage(page, checklistManager, linkName);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
     }
 }
 
 async function validateDirectedPage(page: any, checklistManager: ChecklistManager, linkName: string) {
-    await page.waitForSelector('.title-page h2 span');
+    try {
+        await page.waitForSelector('.title-page h2 span', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('direct blog page', 'Selector not found: .title-page h2 span');
+        return;
+    }
     const categoryText = await page.$eval('.title-page h2 span', (el: any) =>
         el.textContent?.trim()
     );
@@ -62,7 +84,12 @@ async function validateDirectedPage(page: any, checklistManager: ChecklistManage
 async function validateInCart(page: any, checklistManager: ChecklistManager, linkName: string) {
     console.log('validateInCart');
     console.log('url:', page.url());
-    await page.waitForSelector('tr.cart_item .product-name');
+    try {
+        await page.waitForSelector('tr.cart_item .product-name', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('direct blog page', 'Selector not found: tr.cart_item .product-name');
+        return;
+    }
     const productName = await page.$eval('tr.cart_item .product-name',
         (el: any) => el.textContent?.replace(/×.*$/, '').trim().split(/\s+/)[0]
     );
@@ -79,7 +106,7 @@ async function validateInCart(page: any, checklistManager: ChecklistManager, lin
 
 //Categories
 export async function directAgentsBlog(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'li.cat-item-94 a',
@@ -88,7 +115,7 @@ export async function directAgentsBlog(page: any, checklistManager: ChecklistMan
 }
 
 export async function directEventBlog(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'li.cat-item-235 a',
@@ -97,7 +124,7 @@ export async function directEventBlog(page: any, checklistManager: ChecklistMana
 }
 
 export async function directLaunchingBlog(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'li.cat-item-92 a',
@@ -106,7 +133,7 @@ export async function directLaunchingBlog(page: any, checklistManager: Checklist
 }
 
 export async function directPofficesBlog(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'li.cat-item-93 a',
@@ -115,7 +142,7 @@ export async function directPofficesBlog(page: any, checklistManager: ChecklistM
 }
 
 export async function directPublicityBlog(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'li.cat-item-237 a',
@@ -124,7 +151,7 @@ export async function directPublicityBlog(page: any, checklistManager: Checklist
 }
 
 export async function directVideoBlog(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'li.cat-item-233 a',
@@ -134,7 +161,7 @@ export async function directVideoBlog(page: any, checklistManager: ChecklistMana
 
 //New Products
 export async function directServerB3Order(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'ul.product_list_widget li a[href*=b3]',
@@ -144,7 +171,7 @@ export async function directServerB3Order(page: any, checklistManager: Checklist
 }
 
 export async function directServerB2Order(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'ul.product_list_widget li a[href*=b2]',
@@ -154,7 +181,7 @@ export async function directServerB2Order(page: any, checklistManager: Checklist
 }
 
 export async function directServerB1Order(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'ul.product_list_widget li a[href*=b1]',
@@ -164,7 +191,7 @@ export async function directServerB1Order(page: any, checklistManager: Checklist
 }
 
 export async function directPofficesEnterpriseOrder(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'ul.product_list_widget li a[href*=enterprise]',
@@ -174,7 +201,7 @@ export async function directPofficesEnterpriseOrder(page: any, checklistManager:
 }
 
 export async function directPofficesProfessionalOrder(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'ul.product_list_widget li a[href*=professional]',
@@ -185,7 +212,7 @@ export async function directPofficesProfessionalOrder(page: any, checklistManage
 
 //Tags
 export async function directActivitiesIdeas(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-232',
@@ -194,7 +221,7 @@ export async function directActivitiesIdeas(page: any, checklistManager: Checkli
 }
 
 export async function directAdvertisementSurvey(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-177',
@@ -203,7 +230,7 @@ export async function directAdvertisementSurvey(page: any, checklistManager: Che
 }
 
 export async function directAgreement(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-195',
@@ -212,7 +239,7 @@ export async function directAgreement(page: any, checklistManager: ChecklistMana
 }
 
 export async function directAnnouncement(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-184',
@@ -221,7 +248,7 @@ export async function directAnnouncement(page: any, checklistManager: ChecklistM
 }
 
 export async function directAppreciationLetter(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-199',
@@ -230,7 +257,7 @@ export async function directAppreciationLetter(page: any, checklistManager: Chec
 }
 
 export async function directBusinessModelEvaluation(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-223',
@@ -239,7 +266,7 @@ export async function directBusinessModelEvaluation(page: any, checklistManager:
 }
 
 export async function directCollaborationAgreement(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-198',
@@ -248,7 +275,7 @@ export async function directCollaborationAgreement(page: any, checklistManager: 
 }
 
 export async function directCompanyLetter(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-181',
@@ -257,7 +284,7 @@ export async function directCompanyLetter(page: any, checklistManager: Checklist
 }
 
 export async function directCompanyPolicy(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-183',
@@ -266,7 +293,7 @@ export async function directCompanyPolicy(page: any, checklistManager: Checklist
 }
 
 export async function directCrisisManagementPlan(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-217',
@@ -275,7 +302,7 @@ export async function directCrisisManagementPlan(page: any, checklistManager: Ch
 }
 
 export async function directEmploymentContract(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-186',
@@ -284,7 +311,7 @@ export async function directEmploymentContract(page: any, checklistManager: Chec
 }
 
 export async function directEvent(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-236',
@@ -293,7 +320,7 @@ export async function directEvent(page: any, checklistManager: ChecklistManager)
 }
 
 export async function directEventSurvey(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-176',
@@ -302,7 +329,7 @@ export async function directEventSurvey(page: any, checklistManager: ChecklistMa
 }
 
 export async function directExhibitionSurvey(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-179',
@@ -311,7 +338,7 @@ export async function directExhibitionSurvey(page: any, checklistManager: Checkl
 }
 
 export async function directFAQ(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-174',
@@ -320,7 +347,7 @@ export async function directFAQ(page: any, checklistManager: ChecklistManager) {
 }
 
 export async function directGatheringIdeas(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-228',
@@ -329,7 +356,7 @@ export async function directGatheringIdeas(page: any, checklistManager: Checklis
 }
 
 export async function directInvestmentAnnualReview(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-175',
@@ -338,7 +365,7 @@ export async function directInvestmentAnnualReview(page: any, checklistManager: 
 }
 
 export async function directInvestmentExecutionPlan(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-172',
@@ -347,7 +374,7 @@ export async function directInvestmentExecutionPlan(page: any, checklistManager:
 }
 
 export async function directInvestmentMarketSurvey(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-169',
@@ -356,7 +383,7 @@ export async function directInvestmentMarketSurvey(page: any, checklistManager: 
 }
 
 export async function directInvestmentPortfolioProposal(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-171',
@@ -365,7 +392,7 @@ export async function directInvestmentPortfolioProposal(page: any, checklistMana
 }
 
 export async function directInvestmentProjectReview(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-170',
@@ -374,7 +401,7 @@ export async function directInvestmentProjectReview(page: any, checklistManager:
 }
 
 export async function directLaunching(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-90',
@@ -383,7 +410,7 @@ export async function directLaunching(page: any, checklistManager: ChecklistMana
 }
 
 export async function directLicensingAgreement(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-197',
@@ -392,7 +419,7 @@ export async function directLicensingAgreement(page: any, checklistManager: Chec
 }
 
 export async function directMarketEvaluation(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-224',
@@ -401,7 +428,7 @@ export async function directMarketEvaluation(page: any, checklistManager: Checkl
 }
 
 export async function directMarketingSurvey(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-178',
@@ -410,7 +437,7 @@ export async function directMarketingSurvey(page: any, checklistManager: Checkli
 }
 
 export async function directNonDisclosureAgreement(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-194',
@@ -419,7 +446,7 @@ export async function directNonDisclosureAgreement(page: any, checklistManager: 
 }
 
 export async function directPatentClaim(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-196',
@@ -428,7 +455,7 @@ export async function directPatentClaim(page: any, checklistManager: ChecklistMa
 }
 
 export async function directPoffices(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-91',
@@ -437,7 +464,7 @@ export async function directPoffices(page: any, checklistManager: ChecklistManag
 }
 
 export async function directProcurementGuidelines(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-192',
@@ -446,7 +473,7 @@ export async function directProcurementGuidelines(page: any, checklistManager: C
 }
 
 export async function directPublicity(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-238',
@@ -455,7 +482,7 @@ export async function directPublicity(page: any, checklistManager: ChecklistMana
 }
 
 export async function directRecruitmentWrittenTest(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-185',
@@ -464,7 +491,7 @@ export async function directRecruitmentWrittenTest(page: any, checklistManager: 
 }
 
 export async function directResourcesManagement(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-222',
@@ -473,7 +500,7 @@ export async function directResourcesManagement(page: any, checklistManager: Che
 }
 
 export async function directRiskManagementPlan(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-218',
@@ -482,7 +509,7 @@ export async function directRiskManagementPlan(page: any, checklistManager: Chec
 }
 
 export async function directSalesEvaluation(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-225',
@@ -491,7 +518,7 @@ export async function directSalesEvaluation(page: any, checklistManager: Checkli
 }
 
 export async function directSalesSurvey(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-180',
@@ -500,7 +527,7 @@ export async function directSalesSurvey(page: any, checklistManager: ChecklistMa
 }
 
 export async function directSpeechIntroduction(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-189',
@@ -509,7 +536,7 @@ export async function directSpeechIntroduction(page: any, checklistManager: Chec
 }
 
 export async function directSpeechNote(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-190',
@@ -518,7 +545,7 @@ export async function directSpeechNote(page: any, checklistManager: ChecklistMan
 }
 
 export async function directSpeechScript(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-191',
@@ -527,7 +554,7 @@ export async function directSpeechScript(page: any, checklistManager: ChecklistM
 }
 
 export async function directSpeechTopicIdeationInPofficesAi(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-187',
@@ -536,7 +563,7 @@ export async function directSpeechTopicIdeationInPofficesAi(page: any, checklist
 }
 
 export async function directSpeechTopicReview(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-188',
@@ -545,7 +572,7 @@ export async function directSpeechTopicReview(page: any, checklistManager: Check
 }
 
 export async function directSupplyChainEvaluation(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-227',
@@ -554,7 +581,7 @@ export async function directSupplyChainEvaluation(page: any, checklistManager: C
 }
 
 export async function directSustainabilityPlan(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-221',
@@ -563,7 +590,7 @@ export async function directSustainabilityPlan(page: any, checklistManager: Chec
 }
 
 export async function directTechEvaluation(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-226',
@@ -572,7 +599,7 @@ export async function directTechEvaluation(page: any, checklistManager: Checklis
 }
 
 export async function directTutorials(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-173',
@@ -581,7 +608,7 @@ export async function directTutorials(page: any, checklistManager: ChecklistMana
 }
 
 export async function directWorkflowGuidelines(page: any, checklistManager: ChecklistManager) {
-    await navigateToAllInOneServerProductPage(
+    await navigateToBlogPage(
         page,
         checklistManager,
         'a.tag-link-193',

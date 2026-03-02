@@ -7,7 +7,8 @@ export async function openFailedContent(page: any, checklistManager: ChecklistMa
     const expandButtons = await page.$$('button.css-15ksupa');
     
     if (expandButtons.length === 0) {
-        throw new Error('No uploaded document found');
+        checklistManager.logDirectMessage('open failed content', 'No uploaded document found');
+        return false;
     }
     
     // Find the button that has "Failed" status in its parent card
@@ -51,7 +52,8 @@ export async function openFailedContent(page: any, checklistManager: ChecklistMa
     }
     
     if (!failedButton) {
-        throw new Error('No expand button with Failed status found');
+        checklistManager.logDirectMessage('open failed content', 'No expand button with Failed status found');
+        return false;
     }
     
     // Click the expand button (not the Failed chip)

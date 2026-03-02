@@ -19,8 +19,24 @@ export async function openHistoryCombinePopup(page: any, checklistManager: Check
         await checkboxes[i].click();            
     }
 
-    await page.waitForSelector('button.css-1uuido1', { timeout: 10000 });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+        await page.waitForSelector('button.css-1uuido1', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('History Page', 'Selector not found: button.css-1uuido1');
+        return false;
+    }
     await page.click('button.css-1uuido1');
 
-    return true; 
+    const combineArea = await page.$('div.css-1n5khr6 div[style*="position: relative"]');
+    if (combineArea) {
+        console.log('Combine area found');
+        checklistManager.logDirectMessage('History Page', `Selector found: ${combineArea}`);
+        checklistManager.logDirectMessage('History Page', 'Successfully opened history combine popup');
+        return true;
+    } else {
+        checklistManager.logDirectMessage('History Page', `Selector not found: ${combineArea}`);
+        checklistManager.logDirectMessage('History Page', 'Failed to open history combine popup');
+        return false;
+    }
 }

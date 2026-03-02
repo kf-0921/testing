@@ -7,7 +7,8 @@ export async function openSuccessContent(page: any, checklistManager: ChecklistM
     const expandButtons = await page.$$('button.css-15ksupa');
     
     if (expandButtons.length === 0) {
-        throw new Error('No uploaded document found');
+        checklistManager.logDirectMessage('open success content', 'No uploaded document found');
+        return false;
     }
     
     // Find the button that has "Success" status in its parent card
@@ -51,7 +52,8 @@ export async function openSuccessContent(page: any, checklistManager: ChecklistM
     }
     
     if (!successButton) {
-        throw new Error('No expand button with Success status found');
+        checklistManager.logDirectMessage('open success content', 'No expand button with Success status found');
+        return false;
     }
     
     // Click the expand button (not the Success chip)

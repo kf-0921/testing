@@ -1,11 +1,17 @@
 import { ChecklistManager } from "../../../utils/checklist";
 import { directPlanPage } from "../direct_dropdown";
+import { getPageLanguageInfo } from "../../../checking/language/page_language";
 
 // Helper function to navigate to account page and click a navigation link
 async function navigateToPlanPage(page: any, checklistManager: ChecklistManager, selector: string, linkName: string, validateElement: string | null = null) {
     await directPlanPage(page, checklistManager);
 
-    await page.waitForSelector(selector, { timeout: 10000 });
+    try {
+        await page.waitForSelector(selector, { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('Plan Page', `Selector not found: ${selector}`);
+        return;
+    }
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log(`${linkName} link element is visible!`);
     console.log(`click ${linkName} link...`);
@@ -23,12 +29,12 @@ async function navigateToPlanPage(page: any, checklistManager: ChecklistManager,
     } else if (validateElement) {
         const validateElementCheck = await page.$(validateElement);
         if (validateElementCheck) {
-            checklistManager.logDirectMessage('direct plan page', `Selector found: ${validateElementCheck}`);
-            checklistManager.logDirectMessage('direct plan page', `confirm redirect to ${linkName} page success!`);
+            checklistManager.logDirectMessage('Plan Page', `Selector found: ${validateElementCheck}`);
+            checklistManager.logDirectMessage('Plan Page', `confirm redirect to ${linkName} page success!`);
             return validateElementCheck;
         } else {
-            checklistManager.logDirectMessage('direct plan page', `Selector not found: ${validateElementCheck}`);
-            checklistManager.logDirectMessage('direct plan page', `redirect to ${linkName} page failed!`);
+            checklistManager.logDirectMessage('Plan Page', `Selector not found: ${validateElementCheck}`);
+            checklistManager.logDirectMessage('Plan Page', `redirect to ${linkName} page failed!`);
         }
     } 
 }
@@ -36,18 +42,25 @@ async function navigateToPlanPage(page: any, checklistManager: ChecklistManager,
 async function validateInCart(page: any, checklistManager: ChecklistManager, linkName: string) {
     console.log('validateInCart');
     console.log('url:', page.url());
-    await page.waitForSelector('tr.cart_item .product-name');
+    try {
+        await page.waitForSelector('tr.cart_item .product-name', { timeout: 1000 });
+    } catch {
+        checklistManager.logDirectMessage('Plan Page', 'Selector not found: tr.cart_item .product-name');
+        return;
+    }
     const productName = await page.$eval('tr.cart_item .product-name',
         (el: any) => el.textContent?.replace(/×.*$/, '').trim().split(/\s+/)[0]
     );
     console.log('productName:', productName);
     if (productName === linkName) {
-        checklistManager.logDirectMessage('direct plan page', `Selector found: ${productName}`);
-        checklistManager.logDirectMessage('direct plan page', `confirm product name is ${productName} in cart!`);
+        checklistManager.logDirectMessage('Plan Page', `Selector found: ${productName}`);
+        checklistManager.logDirectMessage('Plan Page', `confirm product name is ${productName} in cart!`);
+        //check page language
+        await getPageLanguageInfo(page, checklistManager);
         return productName;
     } else {
-        checklistManager.logDirectMessage('direct plan page', `Selector not found: ${productName}`);
-        checklistManager.logDirectMessage('direct plan page', `redirect to ${linkName} page failed!`);
+        checklistManager.logDirectMessage('Plan Page', `Selector not found: ${productName}`);
+        checklistManager.logDirectMessage('Plan Page', `redirect to ${linkName} page failed!`);
     }
 }
 

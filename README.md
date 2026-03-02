@@ -7,4 +7,5 @@ npm install --save-dev puppeteer-screen-recorder@2.1.2 --legacy-peer-deps
 
 
 run 
+cd src
 npx ts-node index.ts

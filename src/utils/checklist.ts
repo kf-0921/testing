@@ -22,6 +22,8 @@ class ChecklistManager {
   private fileItems: Map<string, ChecklistItem[]>;
   private fileSections: Map<string, SectionData[]>; // New: track sections per file
   private directMessages: Map<string, string[]>;
+  private currentSheetName?: string;
+
 
   constructor(timestamp: string) {
     // create directories
@@ -59,22 +61,27 @@ class ChecklistManager {
       return false;
     }
   }
-
-  // add item to a file's checklist (collect items by file name)
-  addItemToFile(fileName: string, item: ChecklistItem) {
-    if (!this.fileItems.has(fileName)) {
-      this.fileItems.set(fileName, []);
-    }
-    this.fileItems.get(fileName)!.push(item);
+  setCurrentSheetName(id: string | undefined) {
+    this.currentSheetName = id;
   }
 
-  // New: add item to a specific section within a file
-  addItemToSection(fileName: string, sectionName: string, item: ChecklistItem) {
-    if (!this.fileSections.has(fileName)) {
-      this.fileSections.set(fileName, []);
+  // add item to a file's checklist (collect items by file name). If sheetName is provided, use it as the worksheet name; otherwise use fileName.
+  addItemToFile(fileName: string, item: ChecklistItem, sheetName?: string) {
+    const key = sheetName ?? this.currentSheetName ?? fileName;
+    if (!this.fileItems.has(key)) {
+      this.fileItems.set(key, []);
+    }
+    this.fileItems.get(key)!.push(item);
+  }
+
+  // Add item to a specific section within a file. If sheetName is provided, use it as the worksheet name; otherwise use fileName.
+  addItemToSection(fileName: string, sectionName: string, item: ChecklistItem, sheetName?: string) {
+    const key = sheetName ?? this.currentSheetName ?? fileName;
+    if (!this.fileSections.has(key)) {
+      this.fileSections.set(key, []);
     }
 
-    const sections = this.fileSections.get(fileName)!;
+    const sections = this.fileSections.get(key)!;
     let section = sections.find(s => s.sectionName === sectionName);
 
     if (!section) {
@@ -193,12 +200,13 @@ class ChecklistManager {
     this.txtContent.push(''); // empty line between files
   }
 
-  // log direct message to Excel and TXT (accumulate per worksheet)
-  logDirectMessage(worksheetName: string, message: string) {
-    if (!this.directMessages.has(worksheetName)) {
-      this.directMessages.set(worksheetName, []);
+  // Log direct message to Excel and TXT (accumulate per worksheet). If sheetName is provided, use it as the worksheet name; otherwise use worksheetName.
+  logDirectMessage(worksheetName: string, message: string, sheetName?: string) {
+    const key = sheetName ?? this.currentSheetName ?? worksheetName;
+    if (!this.directMessages.has(key)) {
+      this.directMessages.set(key, []);
     }
-    this.directMessages.get(worksheetName)!.push(message);
+    this.directMessages.get(key)!.push(message);
   }
 
   // save all collected file checklists
