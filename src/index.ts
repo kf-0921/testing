@@ -5,7 +5,7 @@ import { takeScreenshot } from './utils/screenshot';
 import { loginHeaderCheck } from './checking/defaultLayout/login_header';
 import directToHomePage from './actions/direct_home_page/home_page';
 import { footerCheck } from './checking/defaultLayout/footer';
-import { directAccountAccountDetails } from './actions/direct_dropdown/account/direct_account_dashboard';
+import { directAccountAccountDetails, directAccountAddressEdit } from './actions/direct_dropdown/account/direct_account_dashboard';
 import { planRegularCheckOut } from './actions/test/checkout/plan_regular_check_out';
 import { confirmOrderStep } from './actions/test/checkout/confirm_order';
 import { serverRegularCheck } from './actions/test/checkout/server_b1_check_out';
@@ -14,6 +14,8 @@ import { genDoc } from './actions/test/gen_document/gen_doc';
 import { testDirectPage } from './actions/test/direct_page/test_direct_page';
 import { checkAllElements } from './checking/allCheck';
 import { runTestCase } from './testcase/run_testcase';
+import { directNewsPage } from './actions/direct_dropdown/direct_dropdown';
+import { switchLanguage } from './actions/switch_language/switch_language';
 
 
 // main function
@@ -75,6 +77,7 @@ async function testPoffices() {
 
     try {
       //login step
+      // console.log('direct to home page...');
       // await DirectToHomePage();
       // await LoginStep();
 
@@ -99,6 +102,13 @@ async function testPoffices() {
       // await checkAllElements(page, checklistManager);
 
       await RunTestCase();
+
+      // console.log('switch language to 繁中...');
+      // await switchLanguage(page, checklistManager, "繁中");
+      // console.log('switch language to ENG...');
+      // // await directAccountAccountDetails(page, checklistManager);
+      // await switchLanguage(page, checklistManager, "ENG");
+      // // await directNewsPage(page, checklistManager);
 
 
 

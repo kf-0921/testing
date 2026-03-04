@@ -3,8 +3,8 @@ import { getPageLanguageInfo } from "../../checking/language/page_language";
 
 async function directToHomePage(page: any, checklistManager: ChecklistManager) {
     console.log('goto poffices.ai...');
-    // const url = 'https://poffices.ai/';
-    const url = 'https://poffices.ai/zh-hant/';
+    const url = 'https://poffices.ai/';
+    // const url = 'https://poffices.ai/zh-hant/';
     await page.goto(url, {
         waitUntil: 'networkidle0'
     });

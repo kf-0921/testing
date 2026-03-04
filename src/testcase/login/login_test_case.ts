@@ -6,96 +6,167 @@ import {
   fillUsernamePassword,
   submitLoginForm,
   verifyLoginSuccess,
+  submitLoginFormInFailedCase,
+  checkLocoBikeLogin,
+  logoutStep,
+  checkForgotPassword,
+  checkRegister,
 } from '../../actions/login';
 
 export type LoginTestCaseFn = (page: any, checklistManager: ChecklistManager) => Promise<void>;
 
-// TC-LOGIN-001: 驗證點擊「登入」可開啟登入彈窗，三種登入方式可見
+/**
+ * TC-LOGIN-001
+ * Check login elements: login popup + 3 login methods
+ */
 export async function TC_LOGIN_001(page: any, checklistManager: ChecklistManager) {
   await directToHomePage(page, checklistManager);
   await openLoginPopup(page, checklistManager);
   await checkLoginPopupElements(page, checklistManager);
 }
 
-
-// TC-LOGIN-002: 驗證使用正確帳號密碼可成功登入並進入 dashboard
+/**
+ * TC-LOGIN-002
+ * Check LocoBike login elements in registration popup
+ */
 export async function TC_LOGIN_002(page: any, checklistManager: ChecklistManager) {
   await directToHomePage(page, checklistManager);
   await openLoginPopup(page, checklistManager);
-  await fillUsernamePassword(page, checklistManager, { username: 'RPA-Tester_1', password: 'sq$w2QuEmu*R#LbKDlCZ2JvP' });
+  await checkLocoBikeLogin(page, checklistManager);
+}
+
+/**
+ * TC-LOGIN-003
+ * Fail case: invalid account (username does not exist)
+ */
+export async function TC_LOGIN_003(page: any, checklistManager: ChecklistManager) {
+  await directToHomePage(page, checklistManager);
+  await openLoginPopup(page, checklistManager);
+
+  await fillUsernamePassword(page, checklistManager, {
+    username: 'RPA-Tester', // invalid username
+    password: 'WrongPassword',
+  });
+
+  await submitLoginFormInFailedCase(page, checklistManager);
+
+  const errorMessage = await page.waitForSelector('div.sso-message.sso-error', { timeout: 1000 });
+  const errorMessageText = await errorMessage.evaluate((el: any) => el.textContent);
+
+  checklistManager.addItemToFile('login', {
+    name: 'error message',
+    found: !!errorMessage,
+    text: errorMessageText,
+    url: '',
+  });
+
+  if (errorMessageText.includes('User does not exist')) {
+    checklistManager.logDirectMessage('login', 'invalid username case correct!');
+  } else {
+    checklistManager.logDirectMessage('login', 'invalid username case incorrect!');
+  }
+}
+
+/**
+ * TC-LOGIN-004
+ * Fail case: wrong password
+ */
+export async function TC_LOGIN_004(page: any, checklistManager: ChecklistManager) {
+  await directToHomePage(page, checklistManager);
+  await openLoginPopup(page, checklistManager);
+
+  await fillUsernamePassword(page, checklistManager, {
+    username: 'RPA-Tester_1', // valid account
+    password: 'WrongPassword',
+  });
+
+  await submitLoginFormInFailedCase(page, checklistManager);
+
+  const errorMessage = await page.waitForSelector('div.sso-message.sso-error', { timeout: 1000 });
+  const errorMessageText = await errorMessage.evaluate((el: any) => el.textContent);
+
+  checklistManager.addItemToFile('login', {
+    name: 'error message',
+    found: !!errorMessage,
+    text: errorMessageText,
+    url: '',
+  });
+
+  if (errorMessageText.includes('Invalid password')) {
+    checklistManager.logDirectMessage('login', 'invalid password case correct!');
+  } else {
+    checklistManager.logDirectMessage('login', 'invalid password case incorrect!');
+  }
+}
+
+/**
+ * TC-LOGIN-005
+ * Check forgot password elements
+ */
+export async function TC_LOGIN_005(page: any, checklistManager: ChecklistManager) {
+  await directToHomePage(page, checklistManager);
+  await openLoginPopup(page, checklistManager);
+  await checkForgotPassword(page, checklistManager);
+}
+
+/**
+ * TC-LOGIN-006
+ * Check register elements
+ */
+export async function TC_LOGIN_006(page: any, checklistManager: ChecklistManager) {
+  await directToHomePage(page, checklistManager);
+  await openLoginPopup(page, checklistManager);
+  await checkRegister(page, checklistManager);
+}
+
+/**
+ * TC-LOGIN-007
+ * Login by email + password (happy path)
+ * 假設 email 用同一個欄位 (#sso-username)
+ */
+export async function TC_LOGIN_007(page: any, checklistManager: ChecklistManager) {
+  await directToHomePage(page, checklistManager);
+  await openLoginPopup(page, checklistManager);
+
+  await fillUsernamePassword(page, checklistManager, {
+    username: 'RPA-Tester_1',
+    password: 'sq$w2QuEmu*R#LbKDlCZ2JvP',
+  });
+
   await submitLoginForm(page, checklistManager);
   await verifyLoginSuccess(page, checklistManager);
 }
 
-// // TC-LOGIN-003: 驗證錯誤密碼時顯示錯誤訊息且不允許登入
-// export async function TC_LOGIN_003(page: any, checklistManager: ChecklistManager) {
-//   await directToHomePage(page, checklistManager);
-//   await openLoginPopup(page, checklistManager);
-//   await fillUsernamePassword(page, checklistManager, { username: 'RPA-Tester_1', password: 'WrongPassword' });
-//   await submitLoginForm(page, checklistManager);
-//   // Optional: add a step to check error message on page and record to checklist
-// }
-
-// // TC-LOGIN-004: 驗證欄位為空時顯示驗證訊息且不允許登入
-// export async function TC_LOGIN_004(page: any, checklistManager: ChecklistManager) {
-//   await directToHomePage(page, checklistManager);
-//   await openLoginPopup(page, checklistManager);
-//   await fillUsernamePassword(page, checklistManager, { username: '', password: '' });
-//   await submitLoginForm(page, checklistManager);
-//   // Optional: check validation message
-// }
-
-// // TC-LOGIN-006 / 007 / 008 / 009: keep calling full loginStep until you add Google/LocoBike steps
-// export async function TC_LOGIN_006(page: any, checklistManager: ChecklistManager) {
-//   await directToHomePage(page, checklistManager);
-//   await openLoginPopup(page, checklistManager);
-//   // TODO: add clickGoogleLogin + verify redirect or cancel flow
-// }
-
-// export async function TC_LOGIN_007(page: any, checklistManager: ChecklistManager) {
-//   await directToHomePage(page, checklistManager);
-//   await openLoginPopup(page, checklistManager);
-//   // TODO: click Google → cancel → check still on popup
-// }
-
-// export async function TC_LOGIN_008(page: any, checklistManager: ChecklistManager) {
-//   await directToHomePage(page, checklistManager);
-//   await openLoginPopup(page, checklistManager);
-//   // TODO: LocoBike login flow
-// }
-
-// export async function TC_LOGIN_009(page: any, checklistManager: ChecklistManager) {
-//   await directToHomePage(page, checklistManager);
-//   await openLoginPopup(page, checklistManager);
-//   // TODO: LocoBike unlinked flow
-// }
-
-// TC-LOGIN-010: 驗證登入後重新整理頁面，登入狀態仍維持
-export async function TC_LOGIN_010(page: any, checklistManager: ChecklistManager) {
+/**
+ * TC-LOGIN-008
+ * Logout after successful login
+ */
+export async function TC_LOGIN_008(page: any, checklistManager: ChecklistManager) {
+  // Step 1: login successfully 
   await directToHomePage(page, checklistManager);
-  await verifyLoginSuccess(page, checklistManager); // still on my-account / nav visible
+  // await openLoginPopup(page, checklistManager);
+
+  // await fillUsernamePassword(page, checklistManager, {
+  //   username: 'RPA-Tester_1',                          // or email
+  //   password: 'sq$w2QuEmu*R#LbKDlCZ2JvP',              // valid password
+  // });
+  // await submitLoginForm(page, checklistManager);
+  // await verifyLoginSuccess(page, checklistManager);
+
+  // Step 2: logout
+  await logoutStep(page, checklistManager);
 }
 
-// // TC-LOGIN-011: 驗證可成功登出並回到首頁、清除 session
-// export async function TC_LOGIN_011(page: any, checklistManager: ChecklistManager) {
-//   await directToHomePage(page, checklistManager);
-//   await openLoginPopup(page, checklistManager);
-//   await fillUsernamePassword(page, checklistManager, {});
-//   await submitLoginForm(page, checklistManager);
-//   await verifyLoginSuccess(page, checklistManager);
-//   // TODO: add logoutStep (click profile → logout) then check URL / login button visible
-// }
-
+/**
+ * Registry: which test cases you want to run
+ */
 export const LOGIN_TEST_CASE_REGISTRY: Record<string, LoginTestCaseFn> = {
   'TC-LOGIN-001': TC_LOGIN_001,
   'TC-LOGIN-002': TC_LOGIN_002,
-  // 'TC-LOGIN-003': TC_LOGIN_003,
-  // 'TC-LOGIN-004': TC_LOGIN_004,
-  // 'TC-LOGIN-005': TC_LOGIN_005,
-  // 'TC-LOGIN-006': TC_LOGIN_006,
-  // 'TC-LOGIN-007': TC_LOGIN_007,
-  // 'TC-LOGIN-008': TC_LOGIN_008,
-  // 'TC-LOGIN-009': TC_LOGIN_009,
-  'TC-LOGIN-010': TC_LOGIN_010,
-  // 'TC-LOGIN-011': TC_LOGIN_011,
+  'TC-LOGIN-003': TC_LOGIN_003,
+  'TC-LOGIN-004': TC_LOGIN_004,
+  'TC-LOGIN-005': TC_LOGIN_005,
+  'TC-LOGIN-006': TC_LOGIN_006,
+  'TC-LOGIN-007': TC_LOGIN_007,
+  'TC-LOGIN-008': TC_LOGIN_008,
 };
