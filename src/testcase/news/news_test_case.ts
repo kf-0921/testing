@@ -41,9 +41,9 @@ export async function TC_NEWS_004(page: any, checklistManager: ChecklistManager)
 
 export const NEWS_TEST_CASE_REGISTRY: Record<string, NewsTestCaseFn> = {
   'TC-NEWS-001': TC_NEWS_001,
-  // 'TC-NEWS-002': TC_NEWS_002,
-  // 'TC-NEWS-003': TC_NEWS_003,
-  // 'TC-NEWS-004': TC_NEWS_004,
+  'TC-NEWS-002': TC_NEWS_002,
+  'TC-NEWS-003': TC_NEWS_003,
+  'TC-NEWS-004': TC_NEWS_004,
 };
 
 
